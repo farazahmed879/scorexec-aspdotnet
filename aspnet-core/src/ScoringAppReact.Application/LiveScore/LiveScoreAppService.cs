@@ -147,27 +147,32 @@ namespace ScoringAppReact.LiveScore
                     LegByes = 1
                 };
 
-                var partnershipData = await _partnershipRepository.GetPlayersPartnerShipInSingleMatch(null, matchId, striker.Id, nonStriker.Id, battingTeamId, null);
-                var partnership = new PartnershipDto
+                var partnershipData = await _partnershipRepository.GetPlayersPartnerShipInSingleMatch(null, matchId, striker?.Id, nonStriker?.Id, battingTeamId, null);
+
+                var partnership = new PartnershipDto();
+                if (partnershipData != null)
                 {
-                    MatchId = matchId,
-                    Player1Id = partnershipData.Player1Id,
-                    Player1Runs = partnershipData.Player1Runs,
-                    Player1Balls = partnershipData.Player1Balls,
-                    Player1Name = partnershipData.Player1.Name,
 
-                    Player2Id = partnershipData.Player2Id,
-                    Player2Runs = partnershipData.Player2Runs,
-                    Player2Balls = partnershipData.Player2Balls,
-                    Player2Name = partnershipData.Player2.Name,
+                    partnership.MatchId = matchId;
+                    partnership.Player1Id = partnershipData.Player1Id;
+                    partnership.Player1Runs = partnershipData.Player1Runs;
+                    partnership.Player1Balls = partnershipData.Player1Balls;
+                    partnership.Player1Name = partnershipData.Player1.Name;
 
-                    StartTime = partnershipData.StartTime,
-                    EndTime = partnershipData.EndTime,
-                    Extras = partnershipData.Extras,
-                    Four = partnershipData.Four,
-                    Six = partnershipData.Six,
-                    TotalRuns = (int)(partnershipData.Player1Runs + partnershipData.Player2Runs + partnershipData.Extras),
-                };
+                    partnership.Player2Id = partnershipData.Player2Id;
+                    partnership.Player2Runs = partnershipData.Player2Runs;
+                    partnership.Player2Balls = partnershipData.Player2Balls;
+                    partnership.Player2Name = partnershipData.Player2.Name;
+
+                    partnership.StartTime = partnershipData.StartTime;
+                    partnership.EndTime = partnershipData.EndTime;
+                    partnership.Extras = partnershipData.Extras;
+                    partnership.Four = partnershipData.Four;
+                    partnership.Six = partnershipData.Six;
+                    partnership.TotalRuns = (int)(partnershipData.Player1Runs + partnershipData.Player2Runs + partnershipData.Extras);
+
+                }
+
 
                 return new LiveScoreDto
                 {
@@ -281,9 +286,29 @@ namespace ScoringAppReact.LiveScore
                 var preBatsman = players.Where(i => i.HowOutId == HowOut.Not_Out && i.IsPlayedInning == true).FirstOrDefault();
                 var newBatsman = players.Where(i => i.HowOutId == HowOut.Not_Out && i.PlayerId == model.BatsmanId).FirstOrDefault();
                 newBatsman.IsPlayedInning = true;
+                newBatsman.Position = players.Count(i => i.HowOutId > 1 && i.IsPlayedInning == true) + 1;
                 if (preBatsman.IsStriker == false)
                     newBatsman.IsStriker = true;
 
+                var partnership = new Partnership
+                {
+                    MatchId = model.MatchId,
+                    TeamId = model.TeamId,
+                    Player1Id = preBatsman.PlayerId,
+                    Player1Runs = 0,
+                    Player1Balls = 0,
+
+                    Player2Id = newBatsman.PlayerId,
+                    Player2Runs = 0,
+                    Player2Balls = 0,
+
+                    StartTime = 0,
+                    EndTime = 0,
+                    Extras = 0,
+                    Four = 0,
+                    Six = 0,
+                };
+                await _partnershipRepository.Insert(partnership);
                 await _playerScoreRepository.Update(newBatsman);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 return await Get(model.MatchId, true);
@@ -315,7 +340,7 @@ namespace ScoringAppReact.LiveScore
                 var bowler = players.Where(i => i.PlayerId == model.BowlerId && i.TeamId == model.Team2Id).SingleOrDefault();
                 var nonStriker = players.Where(i => i.PlayerId != model.StrikerId && i.TeamId == model.Team1Id && i.IsPlayedInning == true).SingleOrDefault();
                 //teamscore
-                var teamScore = await _teamScoreRepository.Get(model.Team1Id);
+                var teamScore = await _teamScoreRepository.Get(null, model.Team1Id, model.MatchId, _abpSession.TenantId);
 
 
                 var whoOutPlayer = new PlayerScore();
@@ -427,6 +452,7 @@ namespace ScoringAppReact.LiveScore
                 if (model.StrikerId == model.BatsmanId)
                     striker.HowOutId = model.HowOutId;
 
+                teamScore.Wickets++;
                 playerScore.Add(striker);
                 playerScore.Add(bowler);
 
@@ -478,7 +504,7 @@ namespace ScoringAppReact.LiveScore
         //private methods
         private BatsmanDto GetBatsman(IEnumerable<PlayerScore> team1Players, bool isStriker)
         {
-            return team1Players.Where(i => i.IsStriker == isStriker && i.HowOutId == HowOut.Not_Out).Select(i => new BatsmanDto()
+            return team1Players.Where(i => i.IsStriker == isStriker && i.HowOutId == HowOut.Not_Out && i.IsPlayedInning == true).Select(i => new BatsmanDto()
             {
                 Id = i.PlayerId,
                 Balls = i.Bat_Balls,
@@ -600,7 +626,7 @@ namespace ScoringAppReact.LiveScore
                     changeStrike = true;
                     var nonStriker = players
                      .Where(i => i.PlayerId != batsmanId
-                      && i.TeamId == teamId)
+                      && i.TeamId == teamId && i.IsPlayedInning == true && i.HowOutId == HowOut.Not_Out)
                      .FirstOrDefault();
 
                     nonStriker.IsStriker = changeStrike;
@@ -610,7 +636,7 @@ namespace ScoringAppReact.LiveScore
 
                 var striker = players
                  .Where(i => i.PlayerId == batsmanId
-                  && i.TeamId == teamId)
+                  && i.TeamId == teamId && i.IsPlayedInning == true && i.HowOutId == HowOut.Not_Out)
                  .FirstOrDefault();
 
 
@@ -674,7 +700,7 @@ namespace ScoringAppReact.LiveScore
 
         }
 
-        private async Task<bool> UpdatePartnership(InputLiveScoreDto model, int ball, int runs , int? Extra)
+        private async Task<bool> UpdatePartnership(InputLiveScoreDto model, int ball, int runs, int? Extra)
         {
             try
             {

@@ -11,7 +11,7 @@ namespace ScoringAppReact.Partnerships.Repository
 
         Task<Partnership> Get(long? id, long? matchId, long? playerId, long? teamId, long? tenantId);
 
-        Task<Partnership> GetPlayersPartnerShipInSingleMatch(long? id, long matchId, long player1Id, long player2Id, long teamId, long? tenantId);
+        Task<Partnership> GetPlayersPartnerShipInSingleMatch(long? id, long matchId, long? player1Id, long? player2Id, long teamId, long? tenantId);
 
         Task<List<Partnership>> GetPlayersPartnerShips(long? id, long? matchId, long player1Id, long player2Id, long? teamId, long? tenantId);
 
