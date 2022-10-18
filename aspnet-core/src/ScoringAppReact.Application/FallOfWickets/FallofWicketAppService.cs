@@ -15,16 +15,17 @@ using ScoringAppReact.TeamScores.Dto;
 using ScoringAppReact.Players.Dto;
 using ScoringAppReact.FallOfWickets.Dto;
 using System;
+using ScoringAppReact.FallOfWickets.Repository;
 
 namespace ScoringAppReact.FallOfWickets
 {
     [AbpAuthorize(PermissionNames.Pages_Roles)]
     public class FallofWicketAppService : AbpServiceBase, IFallofWicketAppService
     {
-        private readonly IRepository<FallOfWicket, long> _repository;
+        private readonly IFallofWicketRepository _repository;
         private readonly IAbpSession _abpSession;
 
-        public FallofWicketAppService(IRepository<FallOfWicket, long> repository, IAbpSession abpSession)
+        public FallofWicketAppService(IFallofWicketRepository repository, IAbpSession abpSession)
         {
             _repository = repository;
             _abpSession = abpSession;
@@ -46,27 +47,22 @@ namespace ScoringAppReact.FallOfWickets
 
         private async Task<ResponseMessageDto> CreateAsync(CreateOrUpdateFallofWicketDto model)
         {
-            var alreadyAdded = await _repository.FirstOrDefaultAsync(i => i.MatchId == model.MatchId && i.TeamId == model.TeamId);
+            var alreadyAdded = await _repository.Get(null,model.MatchId,model.TeamId,model.PlayerId);
             if (alreadyAdded != null)
             {
                 throw new UserFriendlyException("Already added with associated team and match");
             }
 
 
-            var result = await _repository.InsertAsync(new FallOfWicket()
+            var result = await _repository.Insert(new FallOfWicket()
             {
                 MatchId = model.MatchId,
                 TeamId = model.TeamId,
-                First = model.First,
-                Second = model.Second,
-                Third = model.Third,
-                Fourth = model.Fourth,
-                Fifth = model.Fifth,
-                Sixth = model.Sixth,
-                Seventh = model.Seventh,
-                Eight = model.Eight,
-                Ninth = model.Ninth,
-                Tenth = model.Tenth,
+                Runs = model.Runs,
+                WicketNo = model.WicketNo,
+                PlayerId = model.PlayerId,
+                StartTime = model.StartTime,
+                EndTime = model.EndTime,
                 TenantId = _abpSession.TenantId
             });
 
@@ -94,21 +90,16 @@ namespace ScoringAppReact.FallOfWickets
 
         private async Task<ResponseMessageDto> UpdateAsync(CreateOrUpdateFallofWicketDto model)
         {
-            var result = await _repository.UpdateAsync(new FallOfWicket()
+            var result = await _repository.Update(new FallOfWicket()
             {
                 Id = model.Id.Value,
+                Runs = model.Runs,
+                WicketNo = model.WicketNo,
+                PlayerId = model.PlayerId,
+                StartTime = model.StartTime,
+                EndTime = model.EndTime,
                 MatchId = model.MatchId,
                 TeamId = model.TeamId,
-                First = model.First,
-                Second = model.Second,
-                Third = model.Third,
-                Fourth = model.Fourth,
-                Fifth = model.Fifth,
-                Sixth = model.Sixth,
-                Seventh = model.Seventh,
-                Eight = model.Eight,
-                Ninth = model.Ninth,
-                Tenth = model.Tenth,
                 TenantId = _abpSession.TenantId
             });
 
@@ -134,8 +125,7 @@ namespace ScoringAppReact.FallOfWickets
 
         public async Task<FallofWicketsDto> GetById(long id)
         {
-            var result = await _repository.GetAll()
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var result = await _repository.Get(id, null, null, null);
             return ObjectMapper.Map<FallofWicketsDto>(result);
         }
 
@@ -146,7 +136,7 @@ namespace ScoringAppReact.FallOfWickets
                 throw new UserFriendlyException("Id id required");
                 //return;
             }
-            var model = await _repository.FirstOrDefaultAsync(i => i.Id == id);
+            var model = await _repository.Get(id, null, null, null);
 
             if (model == null)
             {
@@ -154,7 +144,7 @@ namespace ScoringAppReact.FallOfWickets
                 //return;
             }
             model.IsDeleted = true;
-            var result = await _repository.UpdateAsync(model);
+            var result = await _repository.Update(model);
 
             return new ResponseMessageDto()
             {
@@ -167,28 +157,14 @@ namespace ScoringAppReact.FallOfWickets
 
         public async Task<List<FallofWicketsDto>> GetByTeamIdAndMatchId(long teamId, long matchId)
         {
-            var result = await _repository.GetAll().Where(i => i.TeamId == teamId && i.MatchId == matchId && i.TenantId == _abpSession.TenantId).Select(j => new FallofWicketsDto()
-            {
-                Id = j.Id,
-                MatchId = j.MatchId,
-                TeamId = j.TeamId,
-                First = j.First,
-                Second = j.Second,
-                Third = j.Third,
-                Fourth = j.Fourth,
-                Fifth = j.Fifth,
-                Sixth = j.Sixth,
-                Seventh = j.Seventh,
-                Eight = j.Eight,
-                Ninth = j.Ninth,
-                Tenth = j.Tenth,
-            }).FirstOrDefaultAsync();
+            var result = await _repository.Get(null, matchId, teamId, null);
 
-            return new List<FallofWicketsDto>
-            {
-                result
-            };
+            var ob = ObjectMapper.Map<FallofWicketsDto>(result);
+            var model = new List<FallofWicketsDto>();
+            model.Add(ob);
+            return model;
         }
     }
 }
+
 

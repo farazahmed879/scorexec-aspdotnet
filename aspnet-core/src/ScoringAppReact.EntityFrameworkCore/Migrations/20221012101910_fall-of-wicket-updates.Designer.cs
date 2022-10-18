@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScoringAppReact.EntityFrameworkCore;
 
 namespace ScoringAppReact.Migrations
 {
     [DbContext(typeof(ScoringAppReactDbContext))]
-    partial class ScoringAppReactDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221012101910_fall-of-wicket-updates")]
+    partial class fallofwicketupdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2108,107 +2110,6 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("MatchSchedules");
                 });
 
-            modelBuilder.Entity("ScoringAppReact.Models.Partnership", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EndTime")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Extras")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Four")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("MatchId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Player1Balls")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Player1Four")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Player1Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Player1Runs")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Player1Six")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Player2Balls")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Player2Four")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Player2Id")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Player2Runs")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Player2Six")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("PlayerOutId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Six")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StartTime")
-                        .HasColumnType("int");
-
-                    b.Property<long>("TeamId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WicketNo")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatchId");
-
-                    b.HasIndex("Player1Id");
-
-                    b.HasIndex("Player2Id");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Partnerships");
-                });
-
             modelBuilder.Entity("ScoringAppReact.Models.Player", b =>
                 {
                     b.Property<long>("Id")
@@ -3174,33 +3075,6 @@ namespace ScoringAppReact.Migrations
                 {
                     b.HasOne("ScoringAppReact.Models.Team", "Team")
                         .WithMany("MatchSchedules")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ScoringAppReact.Models.Partnership", b =>
-                {
-                    b.HasOne("ScoringAppReact.Models.Match", "Match")
-                        .WithMany("Partnerships")
-                        .HasForeignKey("MatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ScoringAppReact.Models.Player", "Player1")
-                        .WithMany("Partnerships")
-                        .HasForeignKey("Player1Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ScoringAppReact.Models.Player", "Player2")
-                        .WithMany("PartnershipsPartner")
-                        .HasForeignKey("Player2Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ScoringAppReact.Models.Team", "Team")
-                        .WithMany("Partnerships")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

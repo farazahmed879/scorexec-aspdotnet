@@ -16,6 +16,7 @@ using ScoringAppReact.Teams.Repository;
 using ScoringAppReact.Matches.Repository;
 using ScoringAppReact.Players.Repository;
 using ScoringAppReact.Players.Dto;
+using ScoringAppReact.Partnerships.Repository;
 
 namespace ScoringAppReact.LiveScore
 {
@@ -27,7 +28,7 @@ namespace ScoringAppReact.LiveScore
         private readonly IPlayerScoreRepository _playerScoreRepository;
         private readonly ITeamScoreRepository _teamScoreRepository;
         private readonly ITeamRepository _teamRepository;
-        private readonly IPlayerRepository _playerRepository;
+        private readonly IPartnershipRepository _partnershipRepository;
 
         public LiveScoreAppService(
             IMatchRepository matchRepository,
@@ -35,7 +36,7 @@ namespace ScoringAppReact.LiveScore
             IPlayerScoreRepository playerScoreRepository,
             ITeamScoreRepository teamScoreRepository,
             ITeamRepository teamRepository,
-            IPlayerRepository playerRepository
+            IPartnershipRepository partnershipRepository
             )
         {
             _matchRepository = matchRepository;
@@ -43,7 +44,7 @@ namespace ScoringAppReact.LiveScore
             _playerScoreRepository = playerScoreRepository;
             _teamScoreRepository = teamScoreRepository;
             _teamRepository = teamRepository;
-            _playerRepository = playerRepository;
+            _partnershipRepository = partnershipRepository;
         }
 
         [AbpAllowAnonymous]
@@ -55,6 +56,7 @@ namespace ScoringAppReact.LiveScore
 
                 var players = new List<PlayerListDto>();
                 var match = await _matchRepository.GetMatchThen(matchId);
+
 
                 if (match == null)
                 {
@@ -92,8 +94,6 @@ namespace ScoringAppReact.LiveScore
                 }
 
                 var striker = GetBatsman(team1Players, true);
-
-
 
                 var nonStriker = GetBatsman(team1Players, false);
 
@@ -147,6 +147,28 @@ namespace ScoringAppReact.LiveScore
                     LegByes = 1
                 };
 
+                var partnershipData = await _partnershipRepository.GetPlayersPartnerShipInSingleMatch(null, matchId, striker.Id, nonStriker.Id, battingTeamId, null);
+                var partnership = new PartnershipDto
+                {
+                    MatchId = matchId,
+                    Player1Id = partnershipData.Player1Id,
+                    Player1Runs = partnershipData.Player1Runs,
+                    Player1Balls = partnershipData.Player1Balls,
+                    Player1Name = partnershipData.Player1.Name,
+
+                    Player2Id = partnershipData.Player2Id,
+                    Player2Runs = partnershipData.Player2Runs,
+                    Player2Balls = partnershipData.Player2Balls,
+                    Player2Name = partnershipData.Player2.Name,
+
+                    StartTime = partnershipData.StartTime,
+                    EndTime = partnershipData.EndTime,
+                    Extras = partnershipData.Extras,
+                    Four = partnershipData.Four,
+                    Six = partnershipData.Six,
+                    TotalRuns = (int)(partnershipData.Player1Runs + partnershipData.Player2Runs + partnershipData.Extras),
+                };
+
                 return new LiveScoreDto
                 {
                     CurrentInning = match.MatchDetail.Inning.Value,
@@ -156,10 +178,12 @@ namespace ScoringAppReact.LiveScore
                     Team2 = team2,
                     MatchId = matchId,
                     StrikerId = striker?.Id,
+                    NonStrikerId = nonStriker?.Id,
                     PlayingTeamId = battingTeamId,
                     Extras = extras,
                     BowlingTeamId = bowlingTeamId,
-                    Players = players
+                    Players = players,
+                    Partnership = partnership
                 };
 
 
@@ -195,31 +219,38 @@ namespace ScoringAppReact.LiveScore
                     await UpdateTeamScore(model, Ball.LEGAL);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, model.Runs, Ball.LEGAL, IsChangeStrike(model.Runs));
+                    await UpdatePartnership(model, Ball.LEGAL, model.Runs, Extras.NO_EXTRA);
                     break;
                 case Extras.WIDE:
                     await UpdateTeamScore(model, Ball.ILL_LEGAL);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs + 1, Ball.ILL_LEGAL);
+                    await UpdatePartnership(model, Ball.ILL_LEGAL, Run.DOT, model.Runs + 1);
                     break;
                 case Extras.NO_BALLS:
                     await UpdateTeamScore(model, Ball.ILL_LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, model.Runs, Ball.LEGAL, IsChangeStrike(model.Runs));
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs + 1, Ball.ILL_LEGAL);
+                    await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs + 1);
                     break;
                 case Extras.BYES:
                     await UpdateTeamScore(model, 1);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, Run.DOT, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, Run.DOT, Ball.LEGAL, IsChangeStrike(model.Runs));
+                    await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs);
                     break;
                 case Extras.LEG_BYES:
                     await UpdateTeamScore(model, Ball.LEGAL);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, Run.DOT, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, Run.DOT, Ball.LEGAL, IsChangeStrike(model.Runs));
+                    await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs);
                     break;
             }
 
             return await Get(model.MatchId);
 
         }
+
+
 
         public async Task<LiveScoreDto> ChangeBowler(InputChangeBowler model)
         {
@@ -282,9 +313,30 @@ namespace ScoringAppReact.LiveScore
 
                 var striker = players.Where(i => i.PlayerId == model.StrikerId && i.TeamId == model.Team1Id).SingleOrDefault();
                 var bowler = players.Where(i => i.PlayerId == model.BowlerId && i.TeamId == model.Team2Id).SingleOrDefault();
-
+                var nonStriker = players.Where(i => i.PlayerId != model.StrikerId && i.TeamId == model.Team1Id && i.IsPlayedInning == true).SingleOrDefault();
                 //teamscore
                 var teamScore = await _teamScoreRepository.Get(model.Team1Id);
+
+
+                var whoOutPlayer = new PlayerScore();
+                var whoNotOutPlayer = new PlayerScore();
+
+                if (model.StrikerId != model.BatsmanId)
+                {
+                    whoOutPlayer = players.Where(i => i.PlayerId == model.BatsmanId && i.TeamId == model.Team1Id).SingleOrDefault();
+                    whoNotOutPlayer = players.Where(i => i.PlayerId != model.BatsmanId && i.TeamId == model.Team1Id).SingleOrDefault();
+                }
+
+                else
+                {
+                    whoOutPlayer = striker;
+                    whoNotOutPlayer = nonStriker;
+                }
+
+
+
+                var batsmanOutId = model.StrikerId == model.BatsmanId ? model.StrikerId : nonStriker.Id;
+                var batsmanNotOutId = batsmanOutId == model.StrikerId ? nonStriker.Id : model.StrikerId;
 
 
 
@@ -339,8 +391,6 @@ namespace ScoringAppReact.LiveScore
                         }
                         else
                         {
-                            var whoOutPlayer = players.Where(i => i.PlayerId == model.BatsmanId && i.TeamId == model.Team1Id).SingleOrDefault();
-
                             whoOutPlayer.HowOutId = model.HowOutId;
                             whoOutPlayer.IsStriker = false;
                             whoOutPlayer.Fielder = model.FielderId.ToString();
@@ -380,6 +430,25 @@ namespace ScoringAppReact.LiveScore
                 playerScore.Add(striker);
                 playerScore.Add(bowler);
 
+
+
+                //var partnership = new Partnership
+                //{
+                //    PlayerOutId = whoOutPlayer.PlayerId,
+                //    PlayerORuns = (int)(whoOutPlayer.PlayerId == model.StrikerId ? whoOutPlayer.Bat_Runs + model.Runs : whoOutPlayer.Bat_Runs),
+                //    PlayerOutBalls = (int)(whoOutPlayer.PlayerId == model.StrikerId ? whoOutPlayer.Bat_Balls + 1 : whoOutPlayer.Bat_Balls),
+
+                //    PlayerNotOutId = whoNotOutPlayer.PlayerId,
+                //    PlayerNotOutRuns = (int)(whoNotOutPlayer.PlayerId == model.StrikerId ? whoNotOutPlayer.Bat_Runs + model.Runs : whoNotOutPlayer.Bat_Runs),
+                //    PlayerNotOutBalls = (int)(whoNotOutPlayer.PlayerId == model.StrikerId ? whoNotOutPlayer.Bat_Balls + 1 : whoNotOutPlayer.Bat_Balls),
+
+                //    MatchId = model.MatchId,
+                //    TeamId = model.Team1Id,
+                //    WicketNo = (int)(teamScore.Wickets != null ? teamScore.Wickets + 1 : 1),
+                //    TotalRuns = (int)(teamScore.TotalScore + totalScore)
+                //};
+
+                //await _partnershipRepository.Insert(partnership);
                 await _teamScoreRepository.Update(teamScore);
                 _playerScoreRepository.InsertOrUpdateRange(playerScore);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -595,6 +664,48 @@ namespace ScoringAppReact.LiveScore
                 teamScore.Overs = OverConcatinate(teamScore.Overs, ball);
 
                 await _teamScoreRepository.Update(teamScore);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+        }
+
+        private async Task<bool> UpdatePartnership(InputLiveScoreDto model, int ball, int runs , int? Extra)
+        {
+            try
+            {
+                var partnership = await _partnershipRepository.GetPlayersPartnerShipInSingleMatch(null, model.MatchId, model.BatsmanId, model.NonStrikerId, model.Team1Id, null);
+                if (model.BatsmanId == partnership.Player1Id)
+                {
+                    partnership.Player1Runs += runs;
+                    partnership.Player1Balls += ball;
+                    partnership.Player1Six += model.Runs == 6 ? 1 : 0;
+                    partnership.Player1Four += model.Runs == 4 ? 1 : 0;
+                }
+                else if (model.BatsmanId == partnership.Player2Id)
+                {
+                    partnership.Player2Runs += runs;
+                    partnership.Player2Balls += ball;
+                    partnership.Player2Six += model.Runs == 6 ? 1 : 0;
+                    partnership.Player2Four += model.Runs == 6 ? 1 : 0;
+                }
+                else
+                {
+                    throw new UserFriendlyException("Something went wrong while updating, UpdatePartnership");
+                }
+
+
+                partnership.StartTime = 0;
+                partnership.EndTime = 0;
+                partnership.Extras += Extra;
+                partnership.Four += model.Runs == 4 ? 1 : 0;
+                partnership.Six += model.Runs == 6 ? 1 : 0;
+
+                await _partnershipRepository.Update(partnership);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 return true;
             }

@@ -46,6 +46,8 @@ namespace ScoringAppReact.EntityFrameworkCore
 
         public DbSet<Umpire> Umpires { get; set; }
 
+        public DbSet<Partnership> Partnerships { get; set; }
+
         public ScoringAppReactDbContext(
             DbContextOptions<ScoringAppReactDbContext> options
         ) :
@@ -74,6 +76,25 @@ namespace ScoringAppReact.EntityFrameworkCore
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
+
+            modelBuilder
+               .Entity<Partnership>(entity =>
+               {
+                   entity
+                       .HasOne(s => s.Player1)
+                       .WithMany(s => s.Partnerships)
+                       .HasForeignKey(s => s.Player1Id)
+                       .OnDelete(DeleteBehavior.Restrict)
+                       .IsRequired();
+
+                   entity
+                       .HasOne(s => s.Player2)
+                       .WithMany(s => s.PartnershipsPartner)
+                       .HasForeignKey(s => s.Player2Id)
+                       .OnDelete(DeleteBehavior.Restrict)
+                       .IsRequired();
+               });
+
 
             //It might not have been needed
             //modelBuilder.Entity<Team>(entity =>

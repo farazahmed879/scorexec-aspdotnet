@@ -21,6 +21,7 @@ using ScoringAppReact.PlayerScores;
 using ScoringAppReact.TeamScores;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.TeamScores.Dto;
+using ScoringAppReact.Partnerships.Repository;
 
 namespace ScoringAppReact.Matches
 {
@@ -34,13 +35,15 @@ namespace ScoringAppReact.Matches
         private readonly IRepository<MatchDetail, long> _matchDetailRepository;
         private readonly IPlayerScoreAppService _playerScoreAppService;
         private readonly ITeamScoreRepository _teamScoreRepository;
+        private readonly IPartnershipRepository _partnershipRepository;
         public MatchAppService(IRepository<Match, long> repository,
             IRepository<EventTeam, long> teamRepository,
             IRepository<MatchDetail, long> matchDetailRepository,
             IAbpSession abpSession,
             PictureGalleryAppService pictureGalleryAppService,
             IPlayerScoreAppService playerScoreAppService,
-            ITeamScoreRepository teamScoreRepository
+            ITeamScoreRepository teamScoreRepository,
+            IPartnershipRepository partnershipRepository
             )
         {
             _repository = repository;
@@ -49,6 +52,7 @@ namespace ScoringAppReact.Matches
             _pictureGalleryAppService = pictureGalleryAppService;
             _matchDetailRepository = matchDetailRepository;
             _playerScoreAppService = playerScoreAppService;
+            _partnershipRepository = partnershipRepository;
             _teamScoreRepository = teamScoreRepository;
         }
 
@@ -456,7 +460,7 @@ namespace ScoringAppReact.Matches
                 EventId = i.EventId,
                 Event = i.Event.Name,
                 EventStage = i.EventStage,
-                ProfileUrl = i.ProfileUrl                
+                ProfileUrl = i.ProfileUrl
             })
                 .FirstOrDefaultAsync();
             if (result == null)
@@ -615,6 +619,30 @@ namespace ScoringAppReact.Matches
                 });
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await _playerScoreAppService.CreatePlayerScoreListAsync(model.Players);
+
+                var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
+
+
+                var partnership = new Partnership
+                {
+                    MatchId = model.MatchId,
+                    TeamId = model.Team1Id,
+                    Player1Id = currentPlayers.Where(i=> i.IsStriker == true).Select(i=> i.PlayerId).SingleOrDefault(),
+                    Player1Runs = 0,
+                    Player1Balls = 0,
+
+                    Player2Id = currentPlayers.Where(i => i.IsStriker != true).Select(i => i.PlayerId).SingleOrDefault(),
+                    Player2Runs = 0,
+                    Player2Balls = 0,
+
+                    StartTime = 0,
+                    EndTime = 0,
+                    Extras = 0,
+                    Four = 0,
+                    Six = 0,
+                };
+                await _partnershipRepository.Insert(partnership);
+
                 var teamScore = new CreateOrUpdateTeamScoreDto
                 {
                     TotalScore = 0,

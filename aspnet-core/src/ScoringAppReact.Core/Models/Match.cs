@@ -50,6 +50,7 @@ namespace ScoringAppReact.Models
         public List<PlayerScore> PlayerScores { get; set; }
         public List<TeamScore> TeamScores { get; set; }
         public List<FallOfWicket> FallOfWickets { get; set; }
+        public List<Partnership> Partnerships { get; set; }
         public int? TenantId { get; set; }
     }
 }

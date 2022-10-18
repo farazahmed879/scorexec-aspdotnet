@@ -10,6 +10,13 @@ namespace ScoringAppReact.Models
 {
     public class Player : CustomAuditableEntity, IMayHaveTenant
     {
+        public Player()
+        {
+            Teams = new List<TeamPlayer>();
+            Partnerships = new List<Partnership>();
+            PartnershipsPartner = new List<Partnership>();
+            Pictures = new List<Gallery>();
+        }
         [Required]
         public string Name { get; set; }
         public string Contact { get; set; }
@@ -25,6 +32,8 @@ namespace ScoringAppReact.Models
         public bool IsDeactivated { get; set; }
         public string ProfileUrl { get; set; }
         public List<TeamPlayer> Teams { get; set; }
+        public List<Partnership> Partnerships { get; set; }
+        public List<Partnership> PartnershipsPartner { get; set; }
         public List<Gallery> Pictures { get; set; }
         public bool? IsVerified { get; set; }
         public int? TenantId { get; set; }

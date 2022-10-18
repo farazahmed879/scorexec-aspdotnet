@@ -24,6 +24,9 @@ using ScoringAppReact.Teams.Repository;
 using ScoringAppReact.Events.Repository;
 using ScoringAppReact.Players.Repository;
 using ScoringAppReact.Matches.Repository;
+using ScoringAppReact.FallOfWickets;
+using ScoringAppReact.FallOfWickets.Repository;
+using ScoringAppReact.Partnerships.Repository;
 
 namespace ScoringAppReact.Web.Host.Startup
 {
@@ -121,6 +124,8 @@ namespace ScoringAppReact.Web.Host.Startup
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
+            services.AddScoped<IFallofWicketRepository, FallofWicketRepository>();
+            services.AddScoped<IPartnershipRepository, PartnershipRepository>();
 
             // Configure Abp and Dependency Injection
             return services.AddAbp<ScoringAppReactWebHostModule>(

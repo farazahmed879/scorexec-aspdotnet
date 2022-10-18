@@ -46,7 +46,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramPosition, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostRunsdto>();
-                return result.ToList();
+                return result.Where(i => i.TotalBatRuns > 0).ToList();
             }
             catch (Exception e)
             {
@@ -76,7 +76,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramPosition, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostCenturiesdto>();
-                return result.ToList();
+                return result.Where(i => i.NumberOf100s > 0).ToList();
             }
             catch (Exception e)
             {
@@ -105,7 +105,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramPosition, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostFiftiesdto>();
-                return result.ToList();
+                return result.Where(i=> i.NumberOf50s > 0).ToList();
             }
             catch (Exception e)
             {
@@ -135,7 +135,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramPosition, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostFoursdto>();
-                return result.ToList();
+                return result.Where(i=> i.MostFours > 0).ToList();
             }
             catch (Exception e)
             {
@@ -165,7 +165,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramPosition, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostSixesdto>();
-                return result.ToList();
+                return result.Where(i => i.MostSixes > 0).ToList();
             }
             catch (Exception e)
             {
@@ -194,7 +194,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostWicketsdto>();
-                return result.ToList();
+                return result.Where(i=> i.MostWickets > 0).ToList();
             }
             catch (Exception e)
             {
@@ -223,7 +223,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostCatchesdto>();
-                return result.ToList();
+                return result.Where(i => i.MostCatches > 0).ToList();
             }
             catch (Exception e)
             {
@@ -252,7 +252,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostStumpsdto>();
-                return result.ToList();
+                return result.Where(i => i.MostStumps > 0).ToList();
             }
             catch (Exception e)
             {
@@ -280,7 +280,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostMaidensdto>();
-                return result.ToList();
+                return result.Where(i => i.Maidens > 0).ToList();
             }
             catch (Exception e)
             {
@@ -309,7 +309,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<MostRunoutsdto>();
-                return result.ToList();
+                return result.Where(i => i.Runouts > 0).ToList();
             }
             catch (Exception e)
             {
@@ -339,7 +339,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<HighestWicket>();
-                return result.ToList();
+                return result.Where(i => i.Highest > 0).ToList();
             }
             catch (Exception e)
             {
@@ -368,7 +368,7 @@ namespace ScoringAppReact.Statistics
                     { paramTeamId, paramSeason, paramOvers, paramMatchType, paramTournamentId, paramPlayerRoleId },
 
                     commandType: CommandType.StoredProcedure) ?? new List<BestScore>();
-                return result.ToList();
+                return result.Where(i => i.Highest > 0).ToList();
             }
             catch (Exception e)
             {

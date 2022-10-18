@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScoringAppReact.EntityFrameworkCore;
 
 namespace ScoringAppReact.Migrations
 {
     [DbContext(typeof(ScoringAppReactDbContext))]
-    partial class ScoringAppReactDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221012130113_partnerShips")]
+    partial class partnerShips
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2130,12 +2132,6 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("EndTime")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Extras")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Four")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2148,40 +2144,22 @@ namespace ScoringAppReact.Migrations
                     b.Property<long>("MatchId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Player1Balls")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Player1Four")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Player1Id")
+                    b.Property<long>("PlayerNotOutBalls")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Player1Runs")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Player1Six")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Player2Balls")
+                    b.Property<long>("PlayerNotOutId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("Player2Four")
+                    b.Property<long>("PlayerNotOutRuns")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("PlayerOutBalls")
                         .HasColumnType("int");
 
-                    b.Property<long>("Player2Id")
+                    b.Property<long>("PlayerOutId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Player2Runs")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Player2Six")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("PlayerOutId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("Six")
+                    b.Property<int>("PlayerOutRuns")
                         .HasColumnType("int");
 
                     b.Property<int?>("StartTime")
@@ -2193,6 +2171,9 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TotalRuns")
+                        .HasColumnType("int");
+
                     b.Property<int>("WicketNo")
                         .HasColumnType("int");
 
@@ -2200,13 +2181,13 @@ namespace ScoringAppReact.Migrations
 
                     b.HasIndex("MatchId");
 
-                    b.HasIndex("Player1Id");
+                    b.HasIndex("PlayerNotOutId");
 
-                    b.HasIndex("Player2Id");
+                    b.HasIndex("PlayerOutId");
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Partnerships");
+                    b.ToTable("Partnership");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.Player", b =>
@@ -3187,15 +3168,15 @@ namespace ScoringAppReact.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ScoringAppReact.Models.Player", "Player1")
+                    b.HasOne("ScoringAppReact.Models.Player", "PlayerNotOut")
                         .WithMany("Partnerships")
-                        .HasForeignKey("Player1Id")
+                        .HasForeignKey("PlayerNotOutId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ScoringAppReact.Models.Player", "Player2")
+                    b.HasOne("ScoringAppReact.Models.Player", "PlayerOut")
                         .WithMany("PartnershipsPartner")
-                        .HasForeignKey("Player2Id")
+                        .HasForeignKey("PlayerOutId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
