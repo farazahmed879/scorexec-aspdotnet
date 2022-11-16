@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Policy;
 using Abp.Authorization.Roles;
 using ScoringAppReact.Authorization.Roles;
 
@@ -17,5 +18,6 @@ namespace ScoringAppReact.TeamScores.Dto
         public int? LegByes { get; set; }
         public long TeamId { get; set; }
         public long MatchId { get; set; }
+        public int? IsLiveOrMannual { get; set; }
     }
 }

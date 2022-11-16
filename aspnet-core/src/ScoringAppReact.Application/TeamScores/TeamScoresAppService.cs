@@ -17,6 +17,8 @@ using ScoringAppReact.Teams.Dto;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.PlayerScores.Repository;
 using ScoringAppReact.Matches.Repository;
+using ScoringAppReact.Migrations;
+using Abp.Domain.Repositories;
 
 namespace ScoringAppReact.TeamScores
 {
@@ -30,6 +32,7 @@ namespace ScoringAppReact.TeamScores
         private readonly FallofWicketAppService _fallofWicketAppService;
         private readonly TeamAppService _teamAppService;
         private readonly ITeamScoreRepository _teamScoreRepository;
+        IRepository<MatchDetail, long> _matchDetailRepository;
 
         public TeamScoresAppService(
             IMatchRepository matchRepository, IAbpSession abpSession,
@@ -37,7 +40,8 @@ namespace ScoringAppReact.TeamScores
             PlayerScoreAppService playerscoreAppService,
             FallofWicketAppService fallofWicketAppService,
             TeamAppService teamAppService,
-            ITeamScoreRepository teamScoreRepository
+            ITeamScoreRepository teamScoreRepository,
+             IRepository<MatchDetail, long> matchDetailRepository
             )
         {
             _abpSession = abpSession;
@@ -47,6 +51,7 @@ namespace ScoringAppReact.TeamScores
             _fallofWicketAppService = fallofWicketAppService;
             _teamAppService = teamAppService;
             _teamScoreRepository = teamScoreRepository;
+            _matchDetailRepository = matchDetailRepository;
         }
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateTeamScoreDto model)
@@ -73,6 +78,17 @@ namespace ScoringAppReact.TeamScores
 
 
             var result = await _teamScoreRepository.Create(model, _abpSession.TenantId);
+
+            var matchResult = await _matchDetailRepository.InsertAsync(new MatchDetail
+            {
+                Status = 0,
+                IsLiveOrMannual = model.IsLiveOrMannual,
+                ScoringBy = 3, //web app
+                MatchId = model.MatchId,
+                Inning = 0
+            });
+
+            await _matchDetailRepository.InsertAsync(matchResult);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 

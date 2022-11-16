@@ -612,7 +612,7 @@ namespace ScoringAppReact.Matches
                 var result = await _matchDetailRepository.InsertAsync(new MatchDetail
                 {
                     Status = model.Status,
-                    IsLiveStreaming = model.IsLiveStreaming,
+                    IsLiveOrMannual = model.IsLiveOrMannual,
                     ScoringBy = model.ScoringBy,
                     MatchId = model.MatchId,
                     Inning = model.Inning
@@ -627,7 +627,7 @@ namespace ScoringAppReact.Matches
                 {
                     MatchId = model.MatchId,
                     TeamId = model.Team1Id,
-                    Player1Id = currentPlayers.Where(i=> i.IsStriker == true).Select(i=> i.PlayerId).SingleOrDefault(),
+                    Player1Id = currentPlayers.Where(i => i.IsStriker == true).Select(i => i.PlayerId).SingleOrDefault(),
                     Player1Runs = 0,
                     Player1Balls = 0,
 
@@ -702,36 +702,47 @@ namespace ScoringAppReact.Matches
 
         public async Task<PagedResultDto<MatchDto>> GetPaginatedAllAsync(PagedMatchResultRequestDto input)
         {
-            var filteredPlayers = _repository.GetAll()
-                .Where(i => i.IsDeleted == false && (i.TenantId == _abpSession.TenantId) &&
-                   (!input.Team1Id.HasValue || i.HomeTeamId == input.Team1Id || i.OppponentTeamId == input.Team1Id) && (!input.Team2Id.HasValue || i.HomeTeamId == input.Team2Id || i.OppponentTeamId == input.Team2Id))
-                .WhereIf(input.Overs.HasValue, i => i.MatchOvers == input.Overs)
-                .WhereIf(input.Type.HasValue, i => i.MatchTypeId == input.Type)
-                .WhereIf(input.Date.HasValue, i => i.DateOfMatch == input.Date)
-                .WhereIf(input.GroundId.HasValue, i => i.GroundId == input.GroundId);
+            try
+            {
+                var filteredPlayers = _repository.GetAll()
+                    .Where(i => i.IsDeleted == false && (i.TenantId == _abpSession.TenantId) &&
+                       (!input.Team1Id.HasValue || i.HomeTeamId == input.Team1Id || i.OppponentTeamId == input.Team1Id) && (!input.Team2Id.HasValue || i.HomeTeamId == input.Team2Id || i.OppponentTeamId == input.Team2Id))
+                    .WhereIf(input.Overs.HasValue, i => i.MatchOvers == input.Overs)
+                    .WhereIf(input.Type.HasValue, i => i.MatchTypeId == input.Type)
+                    .WhereIf(input.Date.HasValue, i => i.DateOfMatch == input.Date)
+                    .WhereIf(input.GroundId.HasValue, i => i.GroundId == input.GroundId);
 
-            var pagedAndFilteredPlayers = filteredPlayers
-                .OrderByDescending(i => i.Id)
-                .PageBy(input);
 
-            var totalCount = filteredPlayers.Count();
+                var pagedAndFilteredPlayers = filteredPlayers
+                    .OrderByDescending(i => i.Id)
+                    .PageBy(input);
 
-            return new PagedResultDto<MatchDto>(
-                totalCount: totalCount,
-                items: await pagedAndFilteredPlayers.Select(i => new MatchDto()
-                {
-                    Id = i.Id,
-                    Ground = i.Ground.Name,
-                    Team1 = i.HomeTeam.Name,
-                    Team2 = i.OppponentTeam.Name,
-                    DateOfMatch = i.DateOfMatch,
-                    MatchType = i.MatchTypeId.ToString(),
-                    Team1Id = i.HomeTeamId,
-                    Team2Id = i.OppponentTeamId,
-                    MatchOvers = i.MatchOvers,
-                    EventName = i.Event.Name ?? "N/A",
-                    Status = i.MatchDetail != null ? i.MatchDetail.Status : 0
-                }).ToListAsync());
+                var totalCount = filteredPlayers.Count();
+
+                var data = new PagedResultDto<MatchDto>(
+                   totalCount: totalCount,
+                   items: await pagedAndFilteredPlayers.Select(i => new MatchDto()
+                   {
+                       Id = i.Id,
+                       Ground = i.Ground.Name,
+                       Team1 = i.HomeTeam.Name,
+                       Team2 = i.OppponentTeam.Name,
+                       DateOfMatch = i.DateOfMatch,
+                       MatchType = i.MatchTypeId.ToString(),
+                       Team1Id = i.HomeTeamId,
+                       Team2Id = i.OppponentTeamId,
+                       MatchOvers = i.MatchOvers,
+                       EventName = i.Event.Name ?? "N/A",
+                       Status = i.MatchDetail != null ? i.MatchDetail.Status : 0,
+                       IsLiveOrMannual = i.MatchDetail != null ? i.MatchDetail.IsLiveOrMannual : 0,
+                   }).ToListAsync());
+
+                return data;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         //private methods

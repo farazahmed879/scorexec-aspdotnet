@@ -17,6 +17,7 @@ using ScoringAppReact.Matches.Repository;
 using ScoringAppReact.Players.Repository;
 using ScoringAppReact.Players.Dto;
 using ScoringAppReact.Partnerships.Repository;
+using System.Runtime.CompilerServices;
 
 namespace ScoringAppReact.LiveScore
 {
@@ -744,7 +745,7 @@ namespace ScoringAppReact.LiveScore
 
         private Tuple<int, int> CalculateOvers(float? over, int ball)
         {
-            var balls = 0;
+            var balls = 0; 
             var overs = 0;
 
             if (over != null && over != 0)

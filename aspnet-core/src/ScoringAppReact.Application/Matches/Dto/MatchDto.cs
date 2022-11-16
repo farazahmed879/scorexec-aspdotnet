@@ -36,5 +36,6 @@ namespace ScoringAppReact.Matches.Dto
         public int? TenantId { get; set; }
         public string ProfileUrl { get; set; }
         public int? Status  { get; set; }
+        public int? IsLiveOrMannual { get; set; }
     }
 }

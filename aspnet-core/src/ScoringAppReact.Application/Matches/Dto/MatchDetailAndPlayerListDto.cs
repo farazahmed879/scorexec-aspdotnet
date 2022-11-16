@@ -14,7 +14,7 @@ namespace ScoringAppReact.Matches.Dto
         public long Team2Id { get; set; }
         public int? Inning { get; set; }
         public int Status { get; set; }
-        public bool IsLiveStreaming { get; set; }
+        public int? IsLiveOrMannual { get; set; }
         public int ScoringBy { get; set; }
         public long MatchId { get; set; }
         public List<CreateOrUpdatePlayerScoreDto> Players { get; set; }

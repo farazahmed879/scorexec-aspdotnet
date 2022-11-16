@@ -2026,8 +2026,8 @@ namespace ScoringAppReact.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsLiveStreaming")
-                        .HasColumnType("bit");
+                    b.Property<int?>("IsLiveOrMannual")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
