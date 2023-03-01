@@ -189,7 +189,9 @@ namespace ScoringAppReact.LiveScore
                     Extras = extras,
                     BowlingTeamId = bowlingTeamId,
                     Players = players,
-                    Partnership = partnership
+                    Partnership = partnership,
+                    Overs = match.MatchOvers
+
                 };
 
 
@@ -222,37 +224,37 @@ namespace ScoringAppReact.LiveScore
             switch (model.Extras)
             {
                 case Extras.NO_EXTRA:
-                    await UpdateTeamScore(model, Ball.LEGAL);
+                    await UpdateTeamScore(model, Ball.LEGAL, model.Runs);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, model.Runs, Ball.LEGAL, IsChangeStrike(model.Runs));
                     await UpdatePartnership(model, Ball.LEGAL, model.Runs, Extras.NO_EXTRA);
                     break;
                 case Extras.WIDE:
-                    await UpdateTeamScore(model, Ball.ILL_LEGAL);
+                    await UpdateTeamScore(model, Ball.ILL_LEGAL, model.Runs + 1);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs + 1, Ball.ILL_LEGAL);
                     await UpdatePartnership(model, Ball.ILL_LEGAL, Run.DOT, model.Runs + 1);
                     break;
                 case Extras.NO_BALLS:
-                    await UpdateTeamScore(model, Ball.ILL_LEGAL);
+                    await UpdateTeamScore(model, Ball.ILL_LEGAL, model.Runs + 1);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, model.Runs, Ball.LEGAL, IsChangeStrike(model.Runs));
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, model.Runs + 1, Ball.ILL_LEGAL);
                     await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs + 1);
                     break;
                 case Extras.BYES:
-                    await UpdateTeamScore(model, 1);
+                    await UpdateTeamScore(model, 1, model.Runs);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, Run.DOT, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, Run.DOT, Ball.LEGAL, IsChangeStrike(model.Runs));
                     await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs);
                     break;
                 case Extras.LEG_BYES:
-                    await UpdateTeamScore(model, Ball.LEGAL);
+                    await UpdateTeamScore(model, Ball.LEGAL, model.Runs);
                     await UpdateBowler(players, model.Team2Id, model.BowlerId, Run.DOT, Ball.LEGAL);
                     await UpdateStriker(players, model.Team1Id, model.BatsmanId, Run.DOT, Ball.LEGAL, IsChangeStrike(model.Runs));
                     await UpdatePartnership(model, Ball.LEGAL, Run.DOT, model.Runs);
                     break;
             }
 
-            return await Get(model.MatchId);
+            return await Get(model.MatchId, model.NewOver);
 
         }
 
@@ -334,12 +336,18 @@ namespace ScoringAppReact.LiveScore
                 {
                     throw new UserFriendlyException("StrikerId cannot be zero or null");
                 }
+
+                if (model.nonStrikerId == 0)
+                {
+                    throw new UserFriendlyException("NonStrikerId cannot be zero or null");
+                }
+
                 var playerScore = new List<PlayerScore>();
                 var players = await _playerScoreRepository.GetAll(null, model.MatchId, null, null, _abpSession.TenantId);
 
                 var striker = players.Where(i => i.PlayerId == model.StrikerId && i.TeamId == model.Team1Id).SingleOrDefault();
                 var bowler = players.Where(i => i.PlayerId == model.BowlerId && i.TeamId == model.Team2Id).SingleOrDefault();
-                var nonStriker = players.Where(i => i.PlayerId != model.StrikerId && i.TeamId == model.Team1Id && i.IsPlayedInning == true).SingleOrDefault();
+                var nonStriker = players.Where(i => i.PlayerId == model.nonStrikerId && i.TeamId == model.Team1Id && i.IsPlayedInning == true).SingleOrDefault();
                 //teamscore
                 var teamScore = await _teamScoreRepository.Get(null, model.Team1Id, model.MatchId, _abpSession.TenantId);
 
@@ -502,6 +510,12 @@ namespace ScoringAppReact.LiveScore
             }).ToList();
         }
 
+        //public SecondInningDto UpdateSecondInning(LiveScoreDto model)
+        //{
+
+
+        //}
+
         //private methods
         private BatsmanDto GetBatsman(IEnumerable<PlayerScore> team1Players, bool isStriker)
         {
@@ -518,6 +532,8 @@ namespace ScoringAppReact.LiveScore
             }).FirstOrDefault();
 
         }
+
+
 
         private async Task<LiveTeamDto> GetTeamScore(List<TeamScore> model, long teamId)
         {
@@ -680,14 +696,14 @@ namespace ScoringAppReact.LiveScore
 
         }
 
-        private async Task<bool> UpdateTeamScore(InputLiveScoreDto model, int ball)
+        private async Task<bool> UpdateTeamScore(InputLiveScoreDto model, int ball, int Runs)
         {
             try
             {
                 var teamScore = await _teamScoreRepository.Get(matchId: model.MatchId, teamId: model.Team1Id);
 
 
-                teamScore.TotalScore += model.Runs;
+                teamScore.TotalScore += Runs;
                 teamScore.Overs = OverConcatinate(teamScore.Overs, ball);
 
                 await _teamScoreRepository.Update(teamScore);
@@ -745,7 +761,7 @@ namespace ScoringAppReact.LiveScore
 
         private Tuple<int, int> CalculateOvers(float? over, int ball)
         {
-            var balls = 0; 
+            var balls = 0;
             var overs = 0;
 
             if (over != null && over != 0)
@@ -784,6 +800,10 @@ namespace ScoringAppReact.LiveScore
         }
 
 
+    }
+
+    internal class SecondInningDto
+    {
     }
 }
 

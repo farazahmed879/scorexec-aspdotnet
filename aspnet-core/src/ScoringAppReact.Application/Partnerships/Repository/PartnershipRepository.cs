@@ -45,15 +45,20 @@ namespace ScoringAppReact.Partnerships.Repository
 
         public async Task<Partnership> GetPlayersPartnerShipInSingleMatch(long? id, long matchId, long? player1Id, long? player2Id, long teamId, long? tenantId)
         {
-            var m = await _repository.GetAll().FirstOrDefaultAsync();
+            var m = await _repository.GetAll()
+                
+                .FirstOrDefaultAsync();
+            
+            
             var result = await _repository.GetAll()
+
                 .IncludeIf(player1Id.HasValue, i => i.Player1)
                 .IncludeIf(player2Id.HasValue, i => i.Player2)
                .Where(i => (!id.HasValue || i.Id == id) && i.IsDeleted == false &&
                (!tenantId.HasValue || i.TenantId == tenantId) &&
                (i.MatchId == matchId && i.TeamId == teamId &&
                (i.Player1Id == player1Id || i.Player2Id == player1Id) && (i.Player1Id == player2Id || i.Player2Id == player2Id))
-               ).SingleOrDefaultAsync();
+               ).FirstOrDefaultAsync();
 
             return result;
         }

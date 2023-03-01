@@ -22,6 +22,7 @@ using ScoringAppReact.TeamScores;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.TeamScores.Dto;
 using ScoringAppReact.Partnerships.Repository;
+using ScoringAppReact.PlayerScores.Dto;
 
 namespace ScoringAppReact.Matches
 {
@@ -55,7 +56,6 @@ namespace ScoringAppReact.Matches
             _partnershipRepository = partnershipRepository;
             _teamScoreRepository = teamScoreRepository;
         }
-
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateMatchDto matchDto)
         {
@@ -608,7 +608,6 @@ namespace ScoringAppReact.Matches
         {
             try
             {
-
                 var result = await _matchDetailRepository.InsertAsync(new MatchDetail
                 {
                     Status = model.Status,
@@ -617,44 +616,73 @@ namespace ScoringAppReact.Matches
                     MatchId = model.MatchId,
                     Inning = model.Inning
                 });
+
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await _playerScoreAppService.CreatePlayerScoreListAsync(model.Players);
 
                 var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
 
 
-                var partnership = new Partnership
-                {
-                    MatchId = model.MatchId,
-                    TeamId = model.Team1Id,
-                    Player1Id = currentPlayers.Where(i => i.IsStriker == true).Select(i => i.PlayerId).SingleOrDefault(),
-                    Player1Runs = 0,
-                    Player1Balls = 0,
+                var partnership = MapPartnershipData(model, currentPlayers);
 
-                    Player2Id = currentPlayers.Where(i => i.IsStriker != true).Select(i => i.PlayerId).SingleOrDefault(),
-                    Player2Runs = 0,
-                    Player2Balls = 0,
-
-                    StartTime = 0,
-                    EndTime = 0,
-                    Extras = 0,
-                    Four = 0,
-                    Six = 0,
-                };
                 await _partnershipRepository.Insert(partnership);
 
-                var teamScore = new CreateOrUpdateTeamScoreDto
+                var teamScore = TeamScoreData(model);
+
+                await _teamScoreRepository.Create(teamScore, _abpSession.TenantId);
+
+                if (result.Id != 0)
                 {
-                    TotalScore = 0,
-                    Wickets = 0,
-                    Overs = 0,
-                    Wideballs = 0,
-                    NoBalls = 0,
-                    Byes = 0,
-                    LegByes = 0,
-                    MatchId = model.MatchId,
-                    TeamId = model.Team1Id,
+                    return new ResponseMessageDto()
+                    {
+                        Id = result.Id,
+                        SuccessMessage = AppConsts.SuccessfullyInserted,
+                        Success = true,
+                        Error = false,
+                    };
+                }
+                return new ResponseMessageDto()
+                {
+                    Id = 0,
+                    ErrorMessage = AppConsts.InsertFailure,
+                    Success = false,
+                    Error = true,
                 };
+            }
+            catch (Exception e)
+            {
+                throw new UserFriendlyException(e.ToString());
+            }
+
+        }
+
+
+        public async Task<ResponseMessageDto> UpdateMatchDetails(MatchDetailAndPlayerListDto model)
+        {
+            try
+            {
+                var matchDetail = await GetByMatchId(model.MatchId);
+
+                var result = await _matchDetailRepository.UpdateAsync(new MatchDetail
+                {
+                    Status = matchDetail.Status,
+                    IsLiveOrMannual = matchDetail.IsLiveOrMannual,
+                    ScoringBy = matchDetail.ScoringBy,
+                    MatchId = matchDetail.MatchId,
+                    Inning = model.Inning
+                });
+
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                //await _playerScoreAppService.CreatePlayerScoreListAsync(model.Players);
+
+                var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
+
+                var partnership = MapPartnershipData(model, currentPlayers);
+
+                await _partnershipRepository.Insert(partnership);
+
+                var teamScore = TeamScoreData(model);
+
                 await _teamScoreRepository.Create(teamScore, _abpSession.TenantId);
 
                 if (result.Id != 0)
@@ -819,6 +847,48 @@ namespace ScoringAppReact.Matches
             }
 
             return unOrderedstages;
+        }
+
+        private Partnership MapPartnershipData(MatchDetailAndPlayerListDto model, IEnumerable<CreateOrUpdatePlayerScoreDto> currentPlayers)
+        {
+            var partnership = new Partnership
+            {
+                MatchId = model.MatchId,
+                TeamId = model.Team1Id,
+                Player1Id = currentPlayers.Where(i => i.IsStriker == true).Select(i => i.PlayerId).SingleOrDefault(),
+                Player1Runs = 0,
+                Player1Balls = 0,
+
+                Player2Id = currentPlayers.Where(i => i.IsStriker != true).Select(i => i.PlayerId).SingleOrDefault(),
+                Player2Runs = 0,
+                Player2Balls = 0,
+
+                StartTime = 0,
+                EndTime = 0,
+                Extras = 0,
+                Four = 0,
+                Six = 0,
+            };
+
+            return partnership;
+        }
+
+        private CreateOrUpdateTeamScoreDto TeamScoreData(MatchDetailAndPlayerListDto model)
+        {
+            var teamScore = new CreateOrUpdateTeamScoreDto
+            {
+                TotalScore = 0,
+                Wickets = 0,
+                Overs = 0,
+                Wideballs = 0,
+                NoBalls = 0,
+                Byes = 0,
+                LegByes = 0,
+                MatchId = model.MatchId,
+                TeamId = model.Team1Id,
+            };
+
+            return teamScore;
         }
     }
 }
