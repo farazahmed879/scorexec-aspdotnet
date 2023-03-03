@@ -23,6 +23,7 @@ using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.TeamScores.Dto;
 using ScoringAppReact.Partnerships.Repository;
 using ScoringAppReact.PlayerScores.Dto;
+using ScoringAppReact.PlayerScores.Repository;
 
 namespace ScoringAppReact.Matches
 {
@@ -37,6 +38,8 @@ namespace ScoringAppReact.Matches
         private readonly IPlayerScoreAppService _playerScoreAppService;
         private readonly ITeamScoreRepository _teamScoreRepository;
         private readonly IPartnershipRepository _partnershipRepository;
+        private readonly IPlayerScoreRepository _playerScoreRepository;
+
         public MatchAppService(IRepository<Match, long> repository,
             IRepository<EventTeam, long> teamRepository,
             IRepository<MatchDetail, long> matchDetailRepository,
@@ -44,7 +47,8 @@ namespace ScoringAppReact.Matches
             PictureGalleryAppService pictureGalleryAppService,
             IPlayerScoreAppService playerScoreAppService,
             ITeamScoreRepository teamScoreRepository,
-            IPartnershipRepository partnershipRepository
+            IPartnershipRepository partnershipRepository,
+            IPlayerScoreRepository playerScoreRepository
             )
         {
             _repository = repository;
@@ -55,6 +59,7 @@ namespace ScoringAppReact.Matches
             _playerScoreAppService = playerScoreAppService;
             _partnershipRepository = partnershipRepository;
             _teamScoreRepository = teamScoreRepository;
+            _playerScoreRepository = playerScoreRepository;
         }
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateMatchDto matchDto)
@@ -663,19 +668,43 @@ namespace ScoringAppReact.Matches
             {
                 var matchDetail = await GetByMatchId(model.MatchId);
 
-                var result = await _matchDetailRepository.UpdateAsync(new MatchDetail
-                {
-                    Status = matchDetail.Status,
-                    IsLiveOrMannual = matchDetail.IsLiveOrMannual,
-                    ScoringBy = matchDetail.ScoringBy,
-                    MatchId = matchDetail.MatchId,
-                    Inning = model.Inning
-                });
+                matchDetail.Inning = model.Inning;
 
+                var result = await _matchDetailRepository.UpdateAsync(matchDetail);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
-                //await _playerScoreAppService.CreatePlayerScoreListAsync(model.Players);
+
 
                 var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
+                var ids = currentPlayers.Select(i => i.PlayerId).ToList();
+                var bowlerId = model.Players.Where(i => i.IsBowling == true).Select(i => i.PlayerId).SingleOrDefault();
+                ids.Add(bowlerId);
+
+                var playerScores = await _playerScoreRepository.GetAllPlayers(model.MatchId, null, null);
+                var updatePlayerScores = playerScores.Where(i => ids.Contains(i.PlayerId)).ToList();
+
+                foreach (var item in updatePlayerScores)
+                {
+                    if (item.PlayerId == bowlerId)
+                    {
+                        item.IsBowling = true;
+                        item.IsStriker = false;
+                        continue;
+                    }
+
+                    item.IsPlayedInning = true;
+                      
+                    if (item.PlayerId == currentPlayers.Where(i => i.IsStriker == true).Single().PlayerId)
+                    {
+                        item.IsStriker = true;
+                        item.IsBowling = false;
+                    }
+
+                      
+
+                }
+
+                _playerScoreRepository.InsertOrUpdateRange(updatePlayerScores);
+
 
                 var partnership = MapPartnershipData(model, currentPlayers);
 

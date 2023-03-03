@@ -493,10 +493,11 @@ namespace ScoringAppReact.Players
             var result = await _playerScoreRepository.GetAll(teamId, matchId, null, null, _abpSession.TenantId, true, false);
             return result.Select(i => new PlayerListDto()
             {
-                Id = i.Id,
+                Id = i.PlayerId,
                 Name = i.Player.Name,
                 TeamId = i.TeamId,
                 ProfileUrl = i.Player.ProfileUrl,
+
 
             }).ToList();
         }
