@@ -24,6 +24,7 @@ using ScoringAppReact.TeamScores.Dto;
 using ScoringAppReact.Partnerships.Repository;
 using ScoringAppReact.PlayerScores.Dto;
 using ScoringAppReact.PlayerScores.Repository;
+using Abp.EntityFrameworkCore.Extensions;
 
 namespace ScoringAppReact.Matches
 {
@@ -762,6 +763,8 @@ namespace ScoringAppReact.Matches
             try
             {
                 var filteredPlayers = _repository.GetAll()
+                    .Include(i => i.HomeTeam)
+                    .Include(i => i.OppponentTeam)
                     .Where(i => i.IsDeleted == false && (i.TenantId == _abpSession.TenantId) &&
                        (!input.Team1Id.HasValue || i.HomeTeamId == input.Team1Id || i.OppponentTeamId == input.Team1Id) && (!input.Team2Id.HasValue || i.HomeTeamId == input.Team2Id || i.OppponentTeamId == input.Team2Id))
                     .WhereIf(input.Overs.HasValue, i => i.MatchOvers == input.Overs)
@@ -782,8 +785,8 @@ namespace ScoringAppReact.Matches
                    {
                        Id = i.Id,
                        Ground = i.Ground.Name,
-                       Team1 = i.HomeTeam.Name,
-                       Team2 = i.OppponentTeam.Name,
+                       Team1 = i.HomeTeam != null ? i.HomeTeam.Name : "N/A",
+                       Team2 = i.OppponentTeam != null ? i.OppponentTeam.Name : "N/A",
                        DateOfMatch = i.DateOfMatch,
                        MatchType = i.MatchTypeId.ToString(),
                        Team1Id = i.HomeTeamId,

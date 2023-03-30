@@ -802,8 +802,5 @@ namespace ScoringAppReact.LiveScore
 
     }
 
-    internal class SecondInningDto
-    {
-    }
 }
 

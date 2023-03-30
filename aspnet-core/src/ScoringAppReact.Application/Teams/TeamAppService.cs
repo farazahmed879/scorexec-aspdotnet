@@ -17,6 +17,7 @@ using ScoringAppReact.Teams.InputDto;
 using ScoringAppReact.PictureGallery;
 using ScoringAppReact.Teams.Repository;
 using ScoringAppReact.Events.Repository;
+using Abp.Collections.Extensions;
 
 namespace ScoringAppReact.Teams
 {
@@ -173,13 +174,14 @@ namespace ScoringAppReact.Teams
 
                 var model = await _teamRepository.GetAll(_abpSession.TenantId,null);
 
+
                 var allTeams = model
-               .Where(i => i.EventTeams.Any(j => j.EventId == id))
+               .Where(i => i.EventTeams == null || i.EventTeams.Any(j => j.EventId == id))
                .Select(i => new Dto.EventGroupWiseTeamDto()
                {
                    Id = i.Id,
                    Name = i.Name,
-                   Group = i.EventTeams.Where(j => j.EventId == id).Select(j => j.Group).FirstOrDefault()
+                   Group = i.EventTeams != null ? i.EventTeams.Where(j => j.EventId == id).Select(j => j.Group).FirstOrDefault() : null,
 
                }).ToList();
 
