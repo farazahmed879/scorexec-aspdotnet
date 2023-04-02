@@ -44,10 +44,11 @@
     {
         public const int Started = 1;
         public const int Break = 2;
-        public const int Ended = 3;
+        public const int Ended = 4;
         public const int Suspended = 4;
         public const int FirstInning = 1;
         public const int SecondInning = 2;
+        public const int FirstInningEnded = 3;
     }
 
     public class HowOut

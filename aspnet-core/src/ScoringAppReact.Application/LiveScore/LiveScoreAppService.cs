@@ -18,6 +18,7 @@ using ScoringAppReact.Players.Repository;
 using ScoringAppReact.Players.Dto;
 using ScoringAppReact.Partnerships.Repository;
 using System.Runtime.CompilerServices;
+using ScoringAppReact.MatchDetails.Repository;
 
 namespace ScoringAppReact.LiveScore
 {
@@ -30,6 +31,7 @@ namespace ScoringAppReact.LiveScore
         private readonly ITeamScoreRepository _teamScoreRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly IPartnershipRepository _partnershipRepository;
+        private readonly IMatchDetailsRepository _matchDetailsRepository;
 
         public LiveScoreAppService(
             IMatchRepository matchRepository,
@@ -37,7 +39,8 @@ namespace ScoringAppReact.LiveScore
             IPlayerScoreRepository playerScoreRepository,
             ITeamScoreRepository teamScoreRepository,
             ITeamRepository teamRepository,
-            IPartnershipRepository partnershipRepository
+            IPartnershipRepository partnershipRepository,
+            IMatchDetailsRepository matchDetailsRepository
             )
         {
             _matchRepository = matchRepository;
@@ -46,6 +49,7 @@ namespace ScoringAppReact.LiveScore
             _teamScoreRepository = teamScoreRepository;
             _teamRepository = teamRepository;
             _partnershipRepository = partnershipRepository;
+            _matchDetailsRepository = matchDetailsRepository;
         }
 
         [AbpAllowAnonymous]
@@ -64,6 +68,7 @@ namespace ScoringAppReact.LiveScore
                     throw new UserFriendlyException("Match and details not found");
                 }
 
+
                 var playerScores = await _playerScoreRepository.GetAll(null, matchId, null, null, _abpSession.TenantId, playerInclude: true);
 
                 if (playerScores == null)
@@ -71,38 +76,20 @@ namespace ScoringAppReact.LiveScore
                     throw new UserFriendlyException("playerScores not found");
                 }
 
-                var battingTeamId = match.MatchDetail.Inning.Value == MatchStatus.FirstInning ?
+                var battingTeamId = match.MatchDetail.Inning.Value == MatchStatus.FirstInning || match.MatchDetail.Inning.Value == MatchStatus.FirstInningEnded ?
                     match.HomeTeamId : match.OppponentTeamId;
 
                 if (battingTeamId == 0)
                 {
                     throw new UserFriendlyException("battingTeamId not found");
                 }
-                var bowlingTeamId = match.MatchDetail.Inning.Value == MatchStatus.SecondInning ?
+                var bowlingTeamId = match.MatchDetail.Inning.Value == MatchStatus.SecondInning || match.MatchDetail.Inning.Value == MatchStatus.Ended ?
                     match.HomeTeamId : match.OppponentTeamId;
 
                 if (bowlingTeamId == 0)
                 {
                     throw new UserFriendlyException("bowlingTeamId not found");
                 }
-
-                var team1Players = playerScores.Where(i => i.TeamId == battingTeamId && i.HowOutId == HowOut.Not_Out);
-
-
-                if (team1Players == null)
-                {
-                    throw new UserFriendlyException("team1Players not found");
-                }
-
-                var striker = GetBatsman(team1Players, true);
-
-                var nonStriker = GetBatsman(team1Players, false);
-
-                if (nonStriker == null || striker == null)
-                {
-                    players = await GetBatsmanOrBowlers(matchId, battingTeamId);
-                }
-
 
 
                 var bowler = GetBowler(playerScores, bowlingTeamId, newOver);
@@ -125,6 +112,24 @@ namespace ScoringAppReact.LiveScore
                 if (team2 == null)
                 {
                     throw new UserFriendlyException("team2 not found");
+                }
+
+                var team1Players = playerScores.Where(i => i.TeamId == battingTeamId && i.HowOutId == HowOut.Not_Out);
+
+                await UpdateMatchInning(match, team1, team2, playerScores.Where(i => i.TeamId == battingTeamId));
+
+                if (team1Players == null)
+                {
+                    throw new UserFriendlyException("team1Players not found");
+                }
+
+                var striker = GetBatsman(team1Players, true);
+
+                var nonStriker = GetBatsman(team1Players, false);
+
+                if (nonStriker == null || striker == null)
+                {
+                    players = await GetBatsmanOrBowlers(matchId, battingTeamId);
                 }
 
 
@@ -257,6 +262,8 @@ namespace ScoringAppReact.LiveScore
             return await Get(model.MatchId, model.NewOver);
 
         }
+
+
 
 
 
@@ -797,6 +804,39 @@ namespace ScoringAppReact.LiveScore
         private float OverConcatinate(float? overs, int ball)
         {
             return float.Parse($"{CalculateOvers(overs, ball).Item1}.{CalculateOvers(overs, ball).Item2}");
+        }
+
+        private async Task<bool> UpdateMatchInning(Match match, LiveTeamDto team1, LiveTeamDto team2, IEnumerable<PlayerScore> team1Players)
+        {
+            try
+            {
+                var doUpdate = false;
+                if (match.MatchDetail.Inning == MatchStatus.FirstInning || match.MatchDetail.Inning == MatchStatus.SecondInning)
+                {
+                    if ((team1.Overs > 0 && team1.Overs >= match.MatchOvers) || team1.Wickets == team1Players.Count() - 1)
+                    {
+                        match.MatchDetail.Inning = match.MatchDetail.Inning == MatchStatus.FirstInning ? MatchStatus.FirstInningEnded : MatchStatus.Ended;
+                        doUpdate = true;
+                    }
+                    else if (match.MatchDetail.Inning == MatchStatus.SecondInning && team1.Runs > team2.Runs)
+                    {
+                        match.MatchDetail.Inning = MatchStatus.Ended;
+                        doUpdate = true;
+                    }
+                }
+
+                if (!doUpdate)
+                    return doUpdate;
+                //matchDetail.Inning = model.Inning;
+                var result = await _matchDetailsRepository.Update(match.MatchDetail);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
         }
 
 

@@ -27,6 +27,7 @@ using ScoringAppReact.Matches.Repository;
 using ScoringAppReact.FallOfWickets;
 using ScoringAppReact.FallOfWickets.Repository;
 using ScoringAppReact.Partnerships.Repository;
+using ScoringAppReact.MatchDetails.Repository;
 
 namespace ScoringAppReact.Web.Host.Startup
 {
@@ -126,6 +127,7 @@ namespace ScoringAppReact.Web.Host.Startup
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<IFallofWicketRepository, FallofWicketRepository>();
             services.AddScoped<IPartnershipRepository, PartnershipRepository>();
+            services.AddScoped<IMatchDetailsRepository, MatchDetailsRepository>();
 
             // Configure Abp and Dependency Injection
             return services.AddAbp<ScoringAppReactWebHostModule>(

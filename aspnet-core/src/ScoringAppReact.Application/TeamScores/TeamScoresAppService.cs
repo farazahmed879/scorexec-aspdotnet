@@ -203,7 +203,7 @@ namespace ScoringAppReact.TeamScores
             }
 
         }
-        public async Task<MatchDetails> GetTeamScorecard(long team1Id, long team2Id, long matchId)
+        public async Task<MatchDetailsDto> GetTeamScorecard(long team1Id, long team2Id, long matchId)
         {
             try
             {
@@ -248,7 +248,7 @@ namespace ScoringAppReact.TeamScores
                 var secondInningTop3Batsman = SecondInningBatsman.Where(i => i.Runs.HasValue).OrderByDescending(x => x.Runs).Take(3);
                 var secondInningTop3Bowler = SecondInningBowler.Where(i => i.Wickets.HasValue).OrderByDescending(x => x.Wickets).Take(3);
 
-                var matchDetail = new MatchDetails
+                var matchDetail = new MatchDetailsDto
                 {
                     FirstInningBatsman = FirstInningBatsman,
                     SecondInningBatsman = SecondInningBatsman,

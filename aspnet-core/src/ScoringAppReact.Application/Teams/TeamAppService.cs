@@ -172,7 +172,7 @@ namespace ScoringAppReact.Teams
                     throw new UserFriendlyException("Groups Must be required in League Based Tournament");
                 }
 
-                var model = await _teamRepository.GetAll(_abpSession.TenantId,null);
+                    var model = await _teamRepository.GetAll(_abpSession.TenantId,null);
 
 
                 var allTeams = model
