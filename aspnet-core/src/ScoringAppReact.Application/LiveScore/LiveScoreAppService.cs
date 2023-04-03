@@ -421,6 +421,7 @@ namespace ScoringAppReact.LiveScore
                         if (isBatsmanScore == true) striker.Bat_Balls++;
                         bowler.Wickets++;
                         bowler.Overs = isBowlerScore == true ? OverConcatinate(bowler.Overs, Ball.LEGAL) : bowler.Overs;
+                        teamScore.Overs = isTeamBall == true ? OverConcatinate(teamScore.Overs, Ball.LEGAL) : teamScore.Overs;
                         break;
                     case HowOut.Run_Out:
                         if (model.StrikerId == model.BatsmanId)

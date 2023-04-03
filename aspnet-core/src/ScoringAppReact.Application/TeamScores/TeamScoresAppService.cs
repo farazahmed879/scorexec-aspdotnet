@@ -281,16 +281,16 @@ namespace ScoringAppReact.TeamScores
         {
             try
             {
-                if (team1Score == null || team2Score == null || team1Score.Score == 0 || team2Score.Score == 0 || team1Score.Score == null || team2Score.Score == null)
+                if (team1Score == null || team2Score == null || team1Score.Score == null || team2Score.Score == null)
                     return "No Result";
 
                 if (team1Score.Score > team2Score.Score)
                 {
-                    return $"{team1Score.Name} won the match by {team1Score.Score - team2Score.Score}";
+                    return $"{team1Score.Name} won the match by {team1Score.Score - team2Score.Score} runs";
                 }
                 if (team1Score.Score < team2Score.Score)
                 {
-                    return $"{team2Score.Name} won the match by {10 - team2Score.Wickets}";
+                    return $"{team2Score.Name} won the match by {10 - team2Score.Wickets} wickets";
                 }
                 return "Match Tie";
             }
