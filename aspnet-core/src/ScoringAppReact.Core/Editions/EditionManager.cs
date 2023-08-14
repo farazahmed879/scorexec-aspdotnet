@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Editions;
 using Abp.Application.Features;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 
 namespace ScoringAppReact.Editions
 {
@@ -9,11 +10,13 @@ namespace ScoringAppReact.Editions
         public const string DefaultEditionName = "Standard";
 
         public EditionManager(
-            IRepository<Edition> editionRepository, 
-            IAbpZeroFeatureValueStore featureValueStore)
+            IRepository<Edition> editionRepository,
+            IAbpZeroFeatureValueStore featureValueStore,
+            IUnitOfWorkManager unitOfWorkManager) // Add this parameter
             : base(
                 editionRepository,
-                featureValueStore)
+                featureValueStore,
+                unitOfWorkManager)
         {
         }
     }

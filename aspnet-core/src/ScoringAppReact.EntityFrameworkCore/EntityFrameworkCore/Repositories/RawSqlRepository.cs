@@ -12,7 +12,7 @@ namespace Rhithm.EntityFrameworkCore.Repositories
 {
     public interface IRawSqlRepository
     {
-        DbCommand CreateCommand(string commandText, CommandType commandType, params System.Data.SqlClient.SqlParameter[] parameters);
+        DbCommand CreateCommand(string commandText, CommandType commandType, params SqlParameter[] parameters);
         void EnsureConnectionOpen();
     }
 
@@ -21,16 +21,21 @@ namespace Rhithm.EntityFrameworkCore.Repositories
     {
         private readonly IActiveTransactionProvider _transactionProvider;
 
-        public RawSqlRepository(IDbContextProvider<ScoringAppReactDbContext> dbContextProvider,
+        private readonly DbContext _context; // Replace with the actual DbContext type
+
+       
+
+        public RawSqlRepository(IDbContextProvider<ScoringAppReactDbContext> dbContextProvider, DbContext context,
             IActiveTransactionProvider transactionProvider)
             : base(dbContextProvider)
         {
             _transactionProvider = transactionProvider;
+            _context = context;
         }
 
-        public DbCommand CreateCommand(string commandText, CommandType commandType, params System.Data.SqlClient.SqlParameter[] parameters)
+        public DbCommand CreateCommand(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
-            var command = Context.Database.GetDbConnection().CreateCommand();
+            var command = _context.Database.GetDbConnection().CreateCommand();
 
             command.CommandText = commandText;
             command.CommandType = commandType;
@@ -45,7 +50,7 @@ namespace Rhithm.EntityFrameworkCore.Repositories
         }
         public void EnsureConnectionOpen()
         {
-            var connection = Context.Database.GetDbConnection();
+            var connection = _context.Database.GetDbConnection();
 
             if (connection.State != ConnectionState.Open)
             {
