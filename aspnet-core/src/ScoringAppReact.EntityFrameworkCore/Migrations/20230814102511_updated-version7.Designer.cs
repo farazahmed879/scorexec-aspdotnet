@@ -7,26 +7,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScoringAppReact.EntityFrameworkCore;
 
+#nullable disable
+
 namespace ScoringAppReact.Migrations
 {
     [DbContext(typeof(ScoringAppReactDbContext))]
-    [Migration("20220602081204_Group-eventTeam")]
-    partial class GroupeventTeam
+    [Migration("20230814102511_updated-version7")]
+    partial class updatedversion7
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Abp.Application.Editions.Edition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -42,8 +47,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -56,8 +61,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
@@ -68,8 +73,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -83,50 +89,57 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.HasKey("Id");
 
                     b.ToTable("AbpFeatures");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FeatureSetting");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Abp.Auditing.AuditLog", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("BrowserInfo")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("ClientIpAddress")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ClientName")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CustomData")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("Exception")
-                        .HasColumnType("nvarchar(2000)")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ExceptionMessage")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<int>("ExecutionDuration")
                         .HasColumnType("int");
@@ -141,19 +154,19 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("MethodName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Parameters")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("ReturnValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ServiceName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -176,8 +189,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -194,8 +208,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -207,18 +221,21 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PermissionSetting");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
@@ -248,8 +265,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -264,8 +282,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmailAddress")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -286,8 +304,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -308,12 +326,13 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
@@ -343,18 +362,19 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("LoginProvider")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -365,6 +385,10 @@ namespace ScoringAppReact.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("ProviderKey", "TenantId")
+                        .IsUnique()
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.HasIndex("TenantId", "UserId");
 
@@ -377,20 +401,21 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("BrowserInfo")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("ClientIpAddress")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ClientName")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -399,8 +424,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<string>("TenancyName")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -409,8 +434,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserNameOrEmailAddress")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -425,8 +450,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -459,8 +485,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -492,19 +519,20 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("ExpireDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -513,8 +541,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.HasKey("Id");
 
@@ -529,8 +557,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -543,13 +572,13 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("JobArgs")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(1048576);
+                        .HasMaxLength(1048576)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("JobType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<DateTime?>("LastTryTime")
                         .HasColumnType("datetime2");
@@ -574,8 +603,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -591,8 +621,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -617,14 +647,16 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DynamicPropertyId")
                         .HasColumnType("int");
 
                     b.Property<string>("EntityFullName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -642,10 +674,11 @@ namespace ScoringAppReact.Migrations
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicEntityPropertyValue", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("DynamicEntityPropertyId")
                         .HasColumnType("int");
@@ -671,8 +704,12 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InputType")
                         .HasColumnType("nvarchar(max)");
@@ -681,7 +718,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -697,10 +735,11 @@ namespace ScoringAppReact.Migrations
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicPropertyValue", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("DynamicPropertyId")
                         .HasColumnType("int");
@@ -723,8 +762,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("ChangeTime")
                         .HasColumnType("datetime2");
@@ -736,12 +776,12 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(48)")
-                        .HasMaxLength(48);
+                        .HasMaxLength(48)
+                        .HasColumnType("nvarchar(48)");
 
                     b.Property<string>("EntityTypeFullName")
-                        .HasColumnType("nvarchar(192)")
-                        .HasMaxLength(192);
+                        .HasMaxLength(192)
+                        .HasColumnType("nvarchar(192)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -759,20 +799,21 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("BrowserInfo")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("ClientIpAddress")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ClientName")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -787,8 +828,8 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -811,27 +852,34 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("EntityChangeId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("NewValue")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("NewValueHash")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OriginalValue")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("OriginalValueHash")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyName")
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<string>("PropertyTypeFullName")
-                        .HasColumnType("nvarchar(192)")
-                        .HasMaxLength(192);
+                        .HasMaxLength(192)
+                        .HasColumnType("nvarchar(192)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -847,8 +895,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -864,12 +913,12 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -885,8 +934,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -902,8 +951,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -913,13 +963,13 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("LanguageName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2");
@@ -929,16 +979,16 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Source")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(67108864);
+                        .HasMaxLength(67108864)
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -960,44 +1010,48 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Data")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(1048576);
+                        .HasMaxLength(1048576)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DataTypeName")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<string>("EntityTypeAssemblyQualifiedName")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("EntityTypeName")
-                        .HasColumnType("nvarchar(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("ExcludedUserIds")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(131072);
+                        .HasMaxLength(131072)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NotificationName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<byte>("Severity")
                         .HasColumnType("tinyint");
 
+                    b.Property<string>("TargetNotifiers")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
                     b.Property<string>("TenantIds")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(131072);
+                        .HasMaxLength(131072)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserIds")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(131072);
+                        .HasMaxLength(131072)
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1017,20 +1071,24 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<string>("EntityTypeAssemblyQualifiedName")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("EntityTypeName")
-                        .HasColumnType("nvarchar(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("NotificationName")
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
+
+                    b.Property<string>("TargetNotifiers")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -1060,29 +1118,29 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Data")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(1048576);
+                        .HasMaxLength(1048576)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DataTypeName")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("EntityId")
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<string>("EntityTypeAssemblyQualifiedName")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("EntityTypeName")
-                        .HasColumnType("nvarchar(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("NotificationName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(96)")
-                        .HasMaxLength(96);
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)");
 
                     b.Property<byte>("Severity")
                         .HasColumnType("tinyint");
@@ -1109,6 +1167,10 @@ namespace ScoringAppReact.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
+                    b.Property<string>("TargetNotifiers")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
@@ -1129,13 +1191,14 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(95)")
-                        .HasMaxLength(95);
+                        .HasMaxLength(95)
+                        .HasColumnType("nvarchar(95)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1151,8 +1214,8 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1182,8 +1245,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1317,13 +1381,14 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1338,13 +1403,13 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(5000);
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
@@ -1363,13 +1428,13 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -1391,20 +1456,21 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("AuthenticationSource")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1420,12 +1486,12 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("EmailConfirmationCode")
-                        .HasColumnType("nvarchar(328)")
-                        .HasMaxLength(328);
+                        .HasMaxLength(328)
+                        .HasColumnType("nvarchar(328)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1456,48 +1522,48 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("NormalizedEmailAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PasswordResetCode")
-                        .HasColumnType("nvarchar(328)")
-                        .HasMaxLength(328);
+                        .HasMaxLength(328)
+                        .HasColumnType("nvarchar(328)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -1514,12 +1580,13 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("AbpUsers");
                 });
 
-            modelBuilder.Entity("ScoringAppReact.Models.EntityGallery", b =>
+            modelBuilder.Entity("ScoringAppReact.Models.EntityAdmin", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1533,10 +1600,10 @@ namespace ScoringAppReact.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("EntityId")
+                    b.Property<long?>("EventId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("GalleryId")
+                    b.Property<long?>("GroundId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
@@ -1548,19 +1615,43 @@ namespace ScoringAppReact.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("MatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PlayerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("TeamId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("GalleryId");
+                    b.HasIndex("EventId");
 
-                    b.ToTable("EntityGalleries");
+                    b.HasIndex("GroundId");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EntityAdmin");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.Event", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1579,9 +1670,6 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<int>("EventType")
                         .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1605,6 +1693,9 @@ namespace ScoringAppReact.Migrations
                     b.Property<string>("OrganizorContact")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long?>("StartDate")
                         .HasColumnType("bigint");
 
@@ -1623,8 +1714,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1671,8 +1763,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1688,6 +1781,9 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
+
+                    b.Property<int?>("Group")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1717,8 +1813,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1732,16 +1829,7 @@ namespace ScoringAppReact.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Eight")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Fifth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("First")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Fourth")
+                    b.Property<int?>("EndTime")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -1756,16 +1844,13 @@ namespace ScoringAppReact.Migrations
                     b.Property<long>("MatchId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Ninth")
+                    b.Property<long>("PlayerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Runs")
                         .HasColumnType("int");
 
-                    b.Property<int>("Second")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Seventh")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sixth")
+                    b.Property<int?>("StartTime")
                         .HasColumnType("int");
 
                     b.Property<long>("TeamId")
@@ -1774,15 +1859,14 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Tenth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Third")
+                    b.Property<int>("WicketNo")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MatchId");
+
+                    b.HasIndex("PlayerId");
 
                     b.HasIndex("TeamId");
 
@@ -1793,8 +1877,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1808,6 +1893,12 @@ namespace ScoringAppReact.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("EventId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("GroundId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1817,16 +1908,37 @@ namespace ScoringAppReact.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("MatchId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long?>("PlayerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("TeamId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UmpireId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("GroundId");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("UmpireId");
 
                     b.ToTable("Galleries");
                 });
@@ -1835,8 +1947,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1860,12 +1973,15 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Location")
-                        .HasColumnType("nvarchar(25)")
-                        .HasMaxLength(25);
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(25)")
-                        .HasMaxLength(25);
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("ProfileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -1879,8 +1995,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1902,9 +2019,6 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<int?>("EventStage")
                         .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("GroundId")
                         .HasColumnType("bigint");
@@ -1936,6 +2050,9 @@ namespace ScoringAppReact.Migrations
                     b.Property<long?>("PlayerOTM")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ProfileUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Season")
                         .HasColumnType("int");
 
@@ -1960,12 +2077,65 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("ScoringAppReact.Models.MatchDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Inning")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("IsLiveOrMannual")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ScoringBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId")
+                        .IsUnique();
+
+                    b.ToTable("MatchDetails");
+                });
+
             modelBuilder.Entity("ScoringAppReact.Models.MatchSchedule", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -2016,12 +2186,115 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("MatchSchedules");
                 });
 
+            modelBuilder.Entity("ScoringAppReact.Models.Partnership", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EndTime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Extras")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Four")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MatchId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Player1Balls")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Player1Four")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Player1Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Player1Runs")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Player1Six")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Player2Balls")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Player2Four")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Player2Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Player2Runs")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Player2Six")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("PlayerOutId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Six")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartTime")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TeamId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WicketNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("Player1Id");
+
+                    b.HasIndex("Player2Id");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("Partnerships");
+                });
+
             modelBuilder.Entity("ScoringAppReact.Models.Player", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
@@ -2059,9 +2332,6 @@ namespace ScoringAppReact.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
@@ -2090,6 +2360,9 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("PlayerRoleId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProfileUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
@@ -2105,8 +2378,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int?>("BestScore")
                         .HasColumnType("int");
@@ -2236,13 +2510,20 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int?>("Ball_Dots")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Ball_Runs")
                         .HasColumnType("int");
 
                     b.Property<int?>("Bat_Balls")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Bat_Dots")
                         .HasColumnType("int");
 
                     b.Property<int?>("Bat_Runs")
@@ -2275,10 +2556,16 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("HowOutId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsBowling")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsPlayedInning")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsStriker")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -2299,7 +2586,7 @@ namespace ScoringAppReact.Migrations
                     b.Property<long>("PlayerId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Position")
+                    b.Property<int?>("Position")
                         .HasColumnType("int");
 
                     b.Property<int?>("RunOut")
@@ -2337,8 +2624,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -2358,9 +2646,6 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -2382,8 +2667,11 @@ namespace ScoringAppReact.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Place")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ProfileUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -2403,8 +2691,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("CreatingTime")
                         .HasColumnType("bigint");
@@ -2455,8 +2744,9 @@ namespace ScoringAppReact.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int?>("Byes")
                         .HasColumnType("int");
@@ -2500,10 +2790,10 @@ namespace ScoringAppReact.Migrations
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TotalScore")
+                    b.Property<int?>("TotalScore")
                         .HasColumnType("int");
 
-                    b.Property<int>("Wickets")
+                    b.Property<int?>("Wickets")
                         .HasColumnType("int");
 
                     b.Property<int?>("Wideballs")
@@ -2518,16 +2808,69 @@ namespace ScoringAppReact.Migrations
                     b.ToTable("TeamScores");
                 });
 
+            modelBuilder.Entity("ScoringAppReact.Models.Umpire", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Age")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contact")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Umpires");
+                });
+
             modelBuilder.Entity("ScoringAppReact.MultiTenancy.Tenant", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConnectionString")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -2558,13 +2901,13 @@ namespace ScoringAppReact.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("TenancyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -2693,6 +3036,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("DynamicPropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DynamicProperty");
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicEntityPropertyValue", b =>
@@ -2702,6 +3047,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("DynamicEntityPropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DynamicEntityProperty");
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicPropertyValue", b =>
@@ -2711,6 +3058,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("DynamicPropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DynamicProperty");
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityChange", b =>
@@ -2736,6 +3085,8 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("Abp.Organizations.OrganizationUnit", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Abp.Webhooks.WebhookSendAttempt", b =>
@@ -2745,6 +3096,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("WebhookEventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("WebhookEvent");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Authorization.Roles.Role", b =>
@@ -2760,6 +3113,12 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("ScoringAppReact.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("DeleterUser");
+
+                    b.Navigation("LastModifierUser");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Authorization.Users.User", b =>
@@ -2775,15 +3134,53 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("ScoringAppReact.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("DeleterUser");
+
+                    b.Navigation("LastModifierUser");
                 });
 
-            modelBuilder.Entity("ScoringAppReact.Models.EntityGallery", b =>
+            modelBuilder.Entity("ScoringAppReact.Models.EntityAdmin", b =>
                 {
-                    b.HasOne("ScoringAppReact.Models.Gallery", "Gallery")
+                    b.HasOne("ScoringAppReact.Models.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("GalleryId")
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("ScoringAppReact.Models.Ground", "Ground")
+                        .WithMany()
+                        .HasForeignKey("GroundId");
+
+                    b.HasOne("ScoringAppReact.Models.Match", "Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId");
+
+                    b.HasOne("ScoringAppReact.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("MatchId");
+
+                    b.HasOne("ScoringAppReact.Models.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId");
+
+                    b.HasOne("ScoringAppReact.Authorization.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Ground");
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.EventBracket", b =>
@@ -2793,6 +3190,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("ScoringAppReact.Models.EventBracket", "EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.EventTeam", b =>
@@ -2808,6 +3207,10 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.FallOfWicket", b =>
@@ -2818,11 +3221,62 @@ namespace ScoringAppReact.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ScoringAppReact.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ScoringAppReact.Models.Team", "Team")
                         .WithMany("FallOfWickets")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Gallery", b =>
+                {
+                    b.HasOne("ScoringAppReact.Models.Event", "Event")
+                        .WithMany("Pictures")
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("ScoringAppReact.Models.Ground", "Ground")
+                        .WithMany("Pictures")
+                        .HasForeignKey("GroundId");
+
+                    b.HasOne("ScoringAppReact.Models.Match", "Match")
+                        .WithMany("Pictures")
+                        .HasForeignKey("MatchId");
+
+                    b.HasOne("ScoringAppReact.Models.Player", "Player")
+                        .WithMany("Pictures")
+                        .HasForeignKey("PlayerId");
+
+                    b.HasOne("ScoringAppReact.Models.Team", "Team")
+                        .WithMany("Pictures")
+                        .HasForeignKey("TeamId");
+
+                    b.HasOne("ScoringAppReact.Models.Umpire", "Umpire")
+                        .WithMany()
+                        .HasForeignKey("UmpireId");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Ground");
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("Umpire");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.Match", b =>
@@ -2850,6 +3304,27 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("ScoringAppReact.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerOTM");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Ground");
+
+                    b.Navigation("HomeTeam");
+
+                    b.Navigation("OppponentTeam");
+
+                    b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.MatchDetail", b =>
+                {
+                    b.HasOne("ScoringAppReact.Models.Match", "Match")
+                        .WithOne("MatchDetail")
+                        .HasForeignKey("ScoringAppReact.Models.MatchDetail", "MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Match");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.MatchSchedule", b =>
@@ -2859,6 +3334,43 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Partnership", b =>
+                {
+                    b.HasOne("ScoringAppReact.Models.Match", "Match")
+                        .WithMany("Partnerships")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScoringAppReact.Models.Player", "Player1")
+                        .WithMany("Partnerships")
+                        .HasForeignKey("Player1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ScoringAppReact.Models.Player", "Player2")
+                        .WithMany("PartnershipsPartner")
+                        .HasForeignKey("Player2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ScoringAppReact.Models.Team", "Team")
+                        .WithMany("Partnerships")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Player1");
+
+                    b.Navigation("Player2");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.PlayerPastRecord", b =>
@@ -2866,6 +3378,8 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("ScoringAppReact.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId1");
+
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.PlayerScore", b =>
@@ -2891,6 +3405,14 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Bowler");
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.TeamPlayer", b =>
@@ -2906,6 +3428,10 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Player");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoringAppReact.Models.TeamScore", b =>
@@ -2921,6 +3447,10 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoringAppReact.MultiTenancy.Tenant", b =>
@@ -2940,6 +3470,14 @@ namespace ScoringAppReact.Migrations
                     b.HasOne("ScoringAppReact.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
+
+                    b.Navigation("CreatorUser");
+
+                    b.Navigation("DeleterUser");
+
+                    b.Navigation("Edition");
+
+                    b.Navigation("LastModifierUser");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -2949,6 +3487,8 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("EditionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Edition");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Roles.RolePermissionSetting", b =>
@@ -2967,6 +3507,111 @@ namespace ScoringAppReact.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicProperty", b =>
+                {
+                    b.Navigation("DynamicPropertyValues");
+                });
+
+            modelBuilder.Entity("Abp.EntityHistory.EntityChange", b =>
+                {
+                    b.Navigation("PropertyChanges");
+                });
+
+            modelBuilder.Entity("Abp.EntityHistory.EntityChangeSet", b =>
+                {
+                    b.Navigation("EntityChanges");
+                });
+
+            modelBuilder.Entity("Abp.Organizations.OrganizationUnit", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Authorization.Roles.Role", b =>
+                {
+                    b.Navigation("Claims");
+
+                    b.Navigation("Permissions");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Authorization.Users.User", b =>
+                {
+                    b.Navigation("Claims");
+
+                    b.Navigation("Logins");
+
+                    b.Navigation("Permissions");
+
+                    b.Navigation("Roles");
+
+                    b.Navigation("Settings");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Event", b =>
+                {
+                    b.Navigation("EventBracket");
+
+                    b.Navigation("EventTeams");
+
+                    b.Navigation("Matches");
+
+                    b.Navigation("Pictures");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Ground", b =>
+                {
+                    b.Navigation("Pictures");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Match", b =>
+                {
+                    b.Navigation("FallOfWickets");
+
+                    b.Navigation("MatchDetail");
+
+                    b.Navigation("Partnerships");
+
+                    b.Navigation("Pictures");
+
+                    b.Navigation("PlayerScores");
+
+                    b.Navigation("TeamScores");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Player", b =>
+                {
+                    b.Navigation("Partnerships");
+
+                    b.Navigation("PartnershipsPartner");
+
+                    b.Navigation("Pictures");
+
+                    b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("ScoringAppReact.Models.Team", b =>
+                {
+                    b.Navigation("EventTeams");
+
+                    b.Navigation("FallOfWickets");
+
+                    b.Navigation("HomeTeamMatches");
+
+                    b.Navigation("MatchSchedules");
+
+                    b.Navigation("OpponentTeamMatches");
+
+                    b.Navigation("Partnerships");
+
+                    b.Navigation("Pictures");
+
+                    b.Navigation("TeamPlayers");
+
+                    b.Navigation("TeamScores");
                 });
 #pragma warning restore 612, 618
         }

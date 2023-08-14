@@ -17,7 +17,6 @@ using ScoringAppReact.Teams.Dto;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.PlayerScores.Repository;
 using ScoringAppReact.Matches.Repository;
-using ScoringAppReact.Migrations;
 using Abp.Domain.Repositories;
 
 namespace ScoringAppReact.TeamScores
