@@ -276,7 +276,7 @@ namespace ScoringAppReact.Events
                 ProfileUrl = result.ProfileUrl,
                 Organizor = result.Organizor,
                 OrganizorContact = result.OrganizorContact,
-                Pictures = result.Pictures.Select(j => new GalleryDto()
+                Pictures = result.Pictures?.Select(j => new GalleryDto()
                 {
                     Id = j.Id,
                     Url = j.Path,

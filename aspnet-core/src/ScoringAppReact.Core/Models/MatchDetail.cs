@@ -10,7 +10,7 @@ namespace ScoringAppReact.Models
     {
         public int Status { get; set; }
         public int? Inning { get; set; }
-        public bool IsLiveStreaming { get; set; }
+        public int? IsLiveOrMannual { get; set; }
         public int ScoringBy { get; set; }
         public long MatchId { get; set; }
         [ForeignKey("MatchId")]

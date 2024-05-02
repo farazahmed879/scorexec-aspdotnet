@@ -21,6 +21,6 @@ namespace ScoringAppReact.LiveScore.Dto
         public WicketDto HowOut { get; set; }
         public PartnershipDto Partnership { get; set; }
         public List<PlayerListDto> Players { get; set; }
-
+        public int Overs { get; internal set; }
     }
 }
