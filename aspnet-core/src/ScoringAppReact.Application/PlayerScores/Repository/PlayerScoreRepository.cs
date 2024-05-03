@@ -43,6 +43,18 @@ namespace ScoringAppReact.PlayerScores.Repository
             return result;
         }
 
+
+        public async Task<PlayerScore> GetBy(long? teamId, long? matchId, long? playerId)
+        {
+            var result = await _repository.GetAll().
+                Where(i => i.IsDeleted == false &&
+                (!teamId.HasValue || i.TeamId == teamId) &&
+                (!matchId.HasValue || i.MatchId == matchId) &&
+                (!playerId.HasValue || i.PlayerId == playerId))
+                .FirstOrDefaultAsync();
+            return result;
+        }
+
         public async Task<List<PlayerScore>> GetAllPlayers(long? matchId, long? eventId, int? tenantId)
         {
             var result = await _repository.GetAll()

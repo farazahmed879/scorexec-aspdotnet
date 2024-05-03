@@ -13,6 +13,8 @@ namespace ScoringAppReact.PlayerScores.Repository
 
         Task<PlayerScore> Get(long id);
 
+        Task<PlayerScore> GetBy(long? teamId, long? matchId, long? playerId);
+
         Task<List<PlayerScore>> GetAllPlayers(long? matchId, long? eventId, int? tenantId);
 
         void InsertOrUpdateRange(List<PlayerScore> models);
