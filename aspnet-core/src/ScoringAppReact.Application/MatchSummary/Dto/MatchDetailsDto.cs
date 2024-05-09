@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ScoringAppReact.MatchSummary.Dto
 {
-    public class MatchDetails
+    public class MatchDetailsDto
     {
-        public MatchDetails()
+        public MatchDetailsDto()
         {
             FirstInningBatsman = new List<MatchBatsman>();
             FirstInningBowler = new List<MatchBowler>();

@@ -17,6 +17,7 @@ using ScoringAppReact.Teams.Dto;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.PlayerScores.Repository;
 using ScoringAppReact.Matches.Repository;
+using Abp.Domain.Repositories;
 
 namespace ScoringAppReact.TeamScores
 {
@@ -30,6 +31,7 @@ namespace ScoringAppReact.TeamScores
         private readonly FallofWicketAppService _fallofWicketAppService;
         private readonly TeamAppService _teamAppService;
         private readonly ITeamScoreRepository _teamScoreRepository;
+        IRepository<MatchDetail, long> _matchDetailRepository;
 
         public TeamScoresAppService(
             IMatchRepository matchRepository, IAbpSession abpSession,
@@ -37,7 +39,8 @@ namespace ScoringAppReact.TeamScores
             PlayerScoreAppService playerscoreAppService,
             FallofWicketAppService fallofWicketAppService,
             TeamAppService teamAppService,
-            ITeamScoreRepository teamScoreRepository
+            ITeamScoreRepository teamScoreRepository,
+             IRepository<MatchDetail, long> matchDetailRepository
             )
         {
             _abpSession = abpSession;
@@ -47,6 +50,7 @@ namespace ScoringAppReact.TeamScores
             _fallofWicketAppService = fallofWicketAppService;
             _teamAppService = teamAppService;
             _teamScoreRepository = teamScoreRepository;
+            _matchDetailRepository = matchDetailRepository;
         }
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateTeamScoreDto model)
@@ -73,6 +77,17 @@ namespace ScoringAppReact.TeamScores
 
 
             var result = await _teamScoreRepository.Create(model, _abpSession.TenantId);
+
+            var matchResult = await _matchDetailRepository.InsertAsync(new MatchDetail
+            {
+                Status = 0,
+                IsLiveOrMannual = model.IsLiveOrMannual,
+                ScoringBy = 3, //web app
+                MatchId = model.MatchId,
+                Inning = 0
+            });
+
+            await _matchDetailRepository.InsertAsync(matchResult);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -187,7 +202,7 @@ namespace ScoringAppReact.TeamScores
             }
 
         }
-        public async Task<MatchDetails> GetTeamScorecard(long team1Id, long team2Id, long matchId)
+        public async Task<MatchDetailsDto> GetTeamScorecard(long team1Id, long team2Id, long matchId)
         {
             try
             {
@@ -232,7 +247,7 @@ namespace ScoringAppReact.TeamScores
                 var secondInningTop3Batsman = SecondInningBatsman.Where(i => i.Runs.HasValue).OrderByDescending(x => x.Runs).Take(3);
                 var secondInningTop3Bowler = SecondInningBowler.Where(i => i.Wickets.HasValue).OrderByDescending(x => x.Wickets).Take(3);
 
-                var matchDetail = new MatchDetails
+                var matchDetail = new MatchDetailsDto
                 {
                     FirstInningBatsman = FirstInningBatsman,
                     SecondInningBatsman = SecondInningBatsman,
@@ -265,16 +280,16 @@ namespace ScoringAppReact.TeamScores
         {
             try
             {
-                if (team1Score == null || team2Score == null || team1Score.Score == 0 || team2Score.Score == 0 || team1Score.Score == null || team2Score.Score == null)
+                if (team1Score == null || team2Score == null || team1Score.Score == null || team2Score.Score == null)
                     return "No Result";
 
                 if (team1Score.Score > team2Score.Score)
                 {
-                    return $"{team1Score.Name} won the match by {team1Score.Score - team2Score.Score}";
+                    return $"{team1Score.Name} won the match by {team1Score.Score - team2Score.Score} runs";
                 }
                 if (team1Score.Score < team2Score.Score)
                 {
-                    return $"{team2Score.Name} won the match by {10 - team2Score.Wickets}";
+                    return $"{team2Score.Name} won the match by {10 - team2Score.Wickets} wickets";
                 }
                 return "Match Tie";
             }

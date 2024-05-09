@@ -22,6 +22,9 @@ using ScoringAppReact.TeamScores;
 using ScoringAppReact.TeamScores.Repository;
 using ScoringAppReact.TeamScores.Dto;
 using ScoringAppReact.Partnerships.Repository;
+using ScoringAppReact.PlayerScores.Dto;
+using ScoringAppReact.PlayerScores.Repository;
+using Abp.EntityFrameworkCore.Extensions;
 
 namespace ScoringAppReact.Matches
 {
@@ -36,6 +39,8 @@ namespace ScoringAppReact.Matches
         private readonly IPlayerScoreAppService _playerScoreAppService;
         private readonly ITeamScoreRepository _teamScoreRepository;
         private readonly IPartnershipRepository _partnershipRepository;
+        private readonly IPlayerScoreRepository _playerScoreRepository;
+
         public MatchAppService(IRepository<Match, long> repository,
             IRepository<EventTeam, long> teamRepository,
             IRepository<MatchDetail, long> matchDetailRepository,
@@ -43,7 +48,8 @@ namespace ScoringAppReact.Matches
             PictureGalleryAppService pictureGalleryAppService,
             IPlayerScoreAppService playerScoreAppService,
             ITeamScoreRepository teamScoreRepository,
-            IPartnershipRepository partnershipRepository
+            IPartnershipRepository partnershipRepository,
+            IPlayerScoreRepository playerScoreRepository
             )
         {
             _repository = repository;
@@ -54,8 +60,8 @@ namespace ScoringAppReact.Matches
             _playerScoreAppService = playerScoreAppService;
             _partnershipRepository = partnershipRepository;
             _teamScoreRepository = teamScoreRepository;
+            _playerScoreRepository = playerScoreRepository;
         }
-
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateMatchDto matchDto)
         {
@@ -608,53 +614,105 @@ namespace ScoringAppReact.Matches
         {
             try
             {
-
                 var result = await _matchDetailRepository.InsertAsync(new MatchDetail
                 {
                     Status = model.Status,
-                    IsLiveStreaming = model.IsLiveStreaming,
+                    IsLiveOrMannual = model.IsLiveOrMannual,
                     ScoringBy = model.ScoringBy,
                     MatchId = model.MatchId,
                     Inning = model.Inning
                 });
+
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await _playerScoreAppService.CreatePlayerScoreListAsync(model.Players);
 
                 var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
 
 
-                var partnership = new Partnership
-                {
-                    MatchId = model.MatchId,
-                    TeamId = model.Team1Id,
-                    Player1Id = currentPlayers.Where(i=> i.IsStriker == true).Select(i=> i.PlayerId).SingleOrDefault(),
-                    Player1Runs = 0,
-                    Player1Balls = 0,
+                var partnership = MapPartnershipData(model, currentPlayers);
 
-                    Player2Id = currentPlayers.Where(i => i.IsStriker != true).Select(i => i.PlayerId).SingleOrDefault(),
-                    Player2Runs = 0,
-                    Player2Balls = 0,
-
-                    StartTime = 0,
-                    EndTime = 0,
-                    Extras = 0,
-                    Four = 0,
-                    Six = 0,
-                };
                 await _partnershipRepository.Insert(partnership);
 
-                var teamScore = new CreateOrUpdateTeamScoreDto
+                var teamScore = TeamScoreData(model);
+
+                await _teamScoreRepository.Create(teamScore, _abpSession.TenantId);
+
+                if (result.Id != 0)
                 {
-                    TotalScore = 0,
-                    Wickets = 0,
-                    Overs = 0,
-                    Wideballs = 0,
-                    NoBalls = 0,
-                    Byes = 0,
-                    LegByes = 0,
-                    MatchId = model.MatchId,
-                    TeamId = model.Team1Id,
+                    return new ResponseMessageDto()
+                    {
+                        Id = result.Id,
+                        SuccessMessage = AppConsts.SuccessfullyInserted,
+                        Success = true,
+                        Error = false,
+                    };
+                }
+                return new ResponseMessageDto()
+                {
+                    Id = 0,
+                    ErrorMessage = AppConsts.InsertFailure,
+                    Success = false,
+                    Error = true,
                 };
+            }
+            catch (Exception e)
+            {
+                throw new UserFriendlyException(e.ToString());
+            }
+
+        }
+
+
+        public async Task<ResponseMessageDto> UpdateMatchDetails(MatchDetailAndPlayerListDto model)
+        {
+            try
+            {
+                var matchDetail = await GetByMatchId(model.MatchId);
+
+                matchDetail.Inning = model.Inning;
+
+                var result = await _matchDetailRepository.UpdateAsync(matchDetail);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+
+
+                var currentPlayers = model.Players.Where(i => i.IsPlayedInning == true);
+                var ids = currentPlayers.Select(i => i.PlayerId).ToList();
+                var bowlerId = model.Players.Where(i => i.IsBowling == true).Select(i => i.PlayerId).SingleOrDefault();
+                ids.Add(bowlerId);
+
+                var playerScores = await _playerScoreRepository.GetAllPlayers(model.MatchId, null, null);
+                var updatePlayerScores = playerScores.Where(i => ids.Contains(i.PlayerId)).ToList();
+
+                foreach (var item in updatePlayerScores)
+                {
+                    if (item.PlayerId == bowlerId)
+                    {
+                        item.IsBowling = true;
+                        item.IsStriker = false;
+                        continue;
+                    }
+
+                    item.IsPlayedInning = true;
+                      
+                    if (item.PlayerId == currentPlayers.Where(i => i.IsStriker == true).Single().PlayerId)
+                    {
+                        item.IsStriker = true;
+                        item.IsBowling = false;
+                    }
+
+                      
+
+                }
+
+                _playerScoreRepository.InsertOrUpdateRange(updatePlayerScores);
+
+
+                var partnership = MapPartnershipData(model, currentPlayers);
+
+                await _partnershipRepository.Insert(partnership);
+
+                var teamScore = TeamScoreData(model);
+
                 await _teamScoreRepository.Create(teamScore, _abpSession.TenantId);
 
                 if (result.Id != 0)
@@ -702,36 +760,49 @@ namespace ScoringAppReact.Matches
 
         public async Task<PagedResultDto<MatchDto>> GetPaginatedAllAsync(PagedMatchResultRequestDto input)
         {
-            var filteredPlayers = _repository.GetAll()
-                .Where(i => i.IsDeleted == false && (i.TenantId == _abpSession.TenantId) &&
-                   (!input.Team1Id.HasValue || i.HomeTeamId == input.Team1Id || i.OppponentTeamId == input.Team1Id) && (!input.Team2Id.HasValue || i.HomeTeamId == input.Team2Id || i.OppponentTeamId == input.Team2Id))
-                .WhereIf(input.Overs.HasValue, i => i.MatchOvers == input.Overs)
-                .WhereIf(input.Type.HasValue, i => i.MatchTypeId == input.Type)
-                .WhereIf(input.Date.HasValue, i => i.DateOfMatch == input.Date)
-                .WhereIf(input.GroundId.HasValue, i => i.GroundId == input.GroundId);
+            try
+            {
+                var filteredPlayers = _repository.GetAll()
+                    .Include(i => i.HomeTeam)
+                    .Include(i => i.OppponentTeam)
+                    .Where(i => i.IsDeleted == false && (i.TenantId == _abpSession.TenantId) &&
+                       (!input.Team1Id.HasValue || i.HomeTeamId == input.Team1Id || i.OppponentTeamId == input.Team1Id) && (!input.Team2Id.HasValue || i.HomeTeamId == input.Team2Id || i.OppponentTeamId == input.Team2Id))
+                    .WhereIf(input.Overs.HasValue, i => i.MatchOvers == input.Overs)
+                    .WhereIf(input.Type.HasValue, i => i.MatchTypeId == input.Type)
+                    .WhereIf(input.Date.HasValue, i => i.DateOfMatch == input.Date)
+                    .WhereIf(input.GroundId.HasValue, i => i.GroundId == input.GroundId);
 
-            var pagedAndFilteredPlayers = filteredPlayers
-                .OrderByDescending(i => i.Id)
-                .PageBy(input);
 
-            var totalCount = filteredPlayers.Count();
+                var pagedAndFilteredPlayers = filteredPlayers
+                    .OrderByDescending(i => i.Id)
+                    .PageBy(input);
 
-            return new PagedResultDto<MatchDto>(
-                totalCount: totalCount,
-                items: await pagedAndFilteredPlayers.Select(i => new MatchDto()
-                {
-                    Id = i.Id,
-                    Ground = i.Ground.Name,
-                    Team1 = i.HomeTeam.Name,
-                    Team2 = i.OppponentTeam.Name,
-                    DateOfMatch = i.DateOfMatch,
-                    MatchType = i.MatchTypeId.ToString(),
-                    Team1Id = i.HomeTeamId,
-                    Team2Id = i.OppponentTeamId,
-                    MatchOvers = i.MatchOvers,
-                    EventName = i.Event.Name ?? "N/A",
-                    Status = i.MatchDetail != null ? i.MatchDetail.Status : 0
-                }).ToListAsync());
+                var totalCount = filteredPlayers.Count();
+
+                var data = new PagedResultDto<MatchDto>(
+                   totalCount: totalCount,
+                   items: await pagedAndFilteredPlayers.Select(i => new MatchDto()
+                   {
+                       Id = i.Id,
+                       Ground = i.Ground.Name,
+                       Team1 = i.HomeTeam != null ? i.HomeTeam.Name : "N/A",
+                       Team2 = i.OppponentTeam != null ? i.OppponentTeam.Name : "N/A",
+                       DateOfMatch = i.DateOfMatch,
+                       MatchType = i.MatchTypeId.ToString(),
+                       Team1Id = i.HomeTeamId,
+                       Team2Id = i.OppponentTeamId,
+                       MatchOvers = i.MatchOvers,
+                       EventName = i.Event.Name ?? "N/A",
+                       Status = i.MatchDetail != null ? i.MatchDetail.Status : 0,
+                       IsLiveOrMannual = i.MatchDetail != null ? i.MatchDetail.IsLiveOrMannual : 0,
+                   }).ToListAsync());
+
+                return data;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         //private methods
@@ -808,6 +879,48 @@ namespace ScoringAppReact.Matches
             }
 
             return unOrderedstages;
+        }
+
+        private Partnership MapPartnershipData(MatchDetailAndPlayerListDto model, IEnumerable<CreateOrUpdatePlayerScoreDto> currentPlayers)
+        {
+            var partnership = new Partnership
+            {
+                MatchId = model.MatchId,
+                TeamId = model.Team1Id,
+                Player1Id = currentPlayers.Where(i => i.IsStriker == true).Select(i => i.PlayerId).SingleOrDefault(),
+                Player1Runs = 0,
+                Player1Balls = 0,
+
+                Player2Id = currentPlayers.Where(i => i.IsStriker != true).Select(i => i.PlayerId).SingleOrDefault(),
+                Player2Runs = 0,
+                Player2Balls = 0,
+
+                StartTime = 0,
+                EndTime = 0,
+                Extras = 0,
+                Four = 0,
+                Six = 0,
+            };
+
+            return partnership;
+        }
+
+        private CreateOrUpdateTeamScoreDto TeamScoreData(MatchDetailAndPlayerListDto model)
+        {
+            var teamScore = new CreateOrUpdateTeamScoreDto
+            {
+                TotalScore = 0,
+                Wickets = 0,
+                Overs = 0,
+                Wideballs = 0,
+                NoBalls = 0,
+                Byes = 0,
+                LegByes = 0,
+                MatchId = model.MatchId,
+                TeamId = model.Team1Id,
+            };
+
+            return teamScore;
         }
     }
 }

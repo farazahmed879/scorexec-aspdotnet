@@ -14,6 +14,7 @@ namespace ScoringAppReact.LiveScore.Dto
         public long NonStrikerId { get; set; }
         public long BowlerId { get; set; }
         public int? Extras { get; set; }
+        public bool NewOver { get; set; }
 
     }
 }

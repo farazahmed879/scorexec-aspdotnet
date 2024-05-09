@@ -38,5 +38,7 @@ namespace ScoringAppReact.Matches
 
         void CreateBracketMatch(List<EventTeam> teams, long? eventId);
         Task<ResponseMessageDto> CreateMatchDetails(MatchDetailAndPlayerListDto model);
+
+        Task<ResponseMessageDto> UpdateMatchDetails(MatchDetailAndPlayerListDto model);
     }
 }

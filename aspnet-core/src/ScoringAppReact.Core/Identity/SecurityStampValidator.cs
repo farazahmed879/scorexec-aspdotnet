@@ -6,6 +6,7 @@ using ScoringAppReact.Authorization.Roles;
 using ScoringAppReact.Authorization.Users;
 using ScoringAppReact.MultiTenancy;
 using Microsoft.Extensions.Logging;
+using Abp.Domain.Uow; // Add this namespace for IUnitOfWorkManager
 
 namespace ScoringAppReact.Identity
 {
@@ -13,10 +14,11 @@ namespace ScoringAppReact.Identity
     {
         public SecurityStampValidator(
             IOptions<SecurityStampValidatorOptions> options,
-            SignInManager signInManager,
+            AbpSignInManager<Tenant, Role, User> signInManager, // Change to AbpSignInManager
             ISystemClock systemClock,
-            ILoggerFactory loggerFactory) 
-            : base(options, signInManager, systemClock, loggerFactory)
+            ILoggerFactory loggerFactory,
+            IUnitOfWorkManager unitOfWorkManager) // Add this parameter
+            : base(options, signInManager, systemClock, loggerFactory, unitOfWorkManager)
         {
         }
     }
