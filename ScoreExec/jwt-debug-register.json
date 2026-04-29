@@ -1,0 +1,8 @@
+{
+    "token":  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjRlOTI0NjZlLTM0YmItNDhhMy04MjdhLThlOTQwYzE1ZTBiZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imp3dGRlYnVnMjAyNjA0MjkxNjM2NDlAZXhhbXBsZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJUZW5hbnRBZG1pbiIsInRlbmFudF9pZCI6IjQ2NTM0ZGRhLTJmMDctNDNjOS1hNTkyLWNkNTQ2ZTE5NjgwYSIsImZ1bGxfbmFtZSI6IkpXVCBEZWJ1ZyIsImV4cCI6MTc3NzQ2NjIxMCwiaXNzIjoiU2NvcmVFeGVjIiwiYXVkIjoiU2NvcmVFeGVjLUNsaWVudCJ9.P0-ecs9ddk2Qy9b5Nk-1yt0sdB_r5DpQhpoWIbTxxDk",
+    "email":  "jwtdebug20260429163649@example.com",
+    "fullName":  "JWT Debug",
+    "role":  "TenantAdmin",
+    "tenantId":  "46534dda-2f07-43c9-a592-cd546e19680a",
+    "expiresAt":  "2026-04-29T12:36:50.5178375Z"
+}
