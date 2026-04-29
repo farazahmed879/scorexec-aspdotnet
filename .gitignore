@@ -1,19 +1,26 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Build outputs
+**/bin/
+**/obj/
 
-# Other files and folders
-.settings/
+# .NET CLI tools
+.dotnet-cli/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# NuGet
+**/.nuget/
+**/packages/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
-aspnet-core/src/ScoringAppReact.Web.Host/wwwroot/Images/*
+# Logs
+*.txt
+*.log
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# Environment
+appsettings.Development.json
+
+# OS
+.DS_Store
+Thumbs.db
