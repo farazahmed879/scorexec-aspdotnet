@@ -33,6 +33,8 @@ public class UpdateTournamentCommandHandler : IRequestHandler<UpdateTournamentCo
             request.Description,
             request.Sport,
             request.Format,
+            request.Type,
+            request.LogoUrl,
             request.StartDate,
             request.EndDate,
             request.MaxTeams);
@@ -46,6 +48,8 @@ public class UpdateTournamentCommandHandler : IRequestHandler<UpdateTournamentCo
             tournament.Description,
             tournament.Sport,
             tournament.Format,
+            tournament.Type,
+            tournament.LogoUrl,
             tournament.StartDate,
             tournament.EndDate,
             tournament.Status,

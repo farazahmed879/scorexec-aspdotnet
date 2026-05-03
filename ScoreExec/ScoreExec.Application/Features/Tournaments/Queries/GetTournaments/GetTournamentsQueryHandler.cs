@@ -29,6 +29,8 @@ public class GetTournamentsQueryHandler : IRequestHandler<GetTournamentsQuery, R
                 t.Description,
                 t.Sport,
                 t.Format,
+                t.Type,
+                t.LogoUrl,
                 t.StartDate,
                 t.EndDate,
                 t.Status,

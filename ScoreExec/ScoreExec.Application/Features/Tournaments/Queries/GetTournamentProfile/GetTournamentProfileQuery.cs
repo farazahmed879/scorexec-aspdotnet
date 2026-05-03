@@ -28,7 +28,9 @@ public class GetTournamentProfileQueryHandler : IRequestHandler<GetTournamentPro
         {
             Id = tournament.Id,
             Name = tournament.Name,
-            Description = tournament.Description,
+            Description = tournament.Description ?? string.Empty,
+            LogoUrl = tournament.LogoUrl,
+            Type = tournament.Type.ToString(),
             StartDate = tournament.StartDate,
             EndDate = tournament.EndDate,
             Teams = tournament.Teams.Select(t => new TournamentTeamDto

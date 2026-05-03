@@ -11,6 +11,8 @@ public record UpdateTournamentCommand(
     string? Description,
     Sport Sport,
     TournamentFormat Format,
+    TournamentType Type,
+    string? LogoUrl,
     DateTime StartDate,
     DateTime EndDate,
     int MaxTeams

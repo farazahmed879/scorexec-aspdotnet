@@ -9,6 +9,8 @@ public record TournamentDto(
     string? Description,
     Sport Sport,
     TournamentFormat Format,
+    TournamentType Type,
+    string? LogoUrl,
     DateTime StartDate,
     DateTime EndDate,
     TournamentStatus Status,

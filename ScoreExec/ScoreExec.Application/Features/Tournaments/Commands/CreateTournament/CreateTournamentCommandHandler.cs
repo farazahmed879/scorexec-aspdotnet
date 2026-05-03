@@ -25,6 +25,8 @@ public class CreateTournamentCommandHandler : IRequestHandler<CreateTournamentCo
             request.Description,
             request.Sport,
             request.Format,
+            request.Type,
+            request.LogoUrl,
             request.StartDate,
             request.EndDate,
             request.MaxTeams);
@@ -39,6 +41,8 @@ public class CreateTournamentCommandHandler : IRequestHandler<CreateTournamentCo
             tournament.Description,
             tournament.Sport,
             tournament.Format,
+            tournament.Type,
+            tournament.LogoUrl,
             tournament.StartDate,
             tournament.EndDate,
             tournament.Status,

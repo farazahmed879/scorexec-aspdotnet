@@ -28,6 +28,8 @@ public class GetTournamentByIdQueryHandler : IRequestHandler<GetTournamentByIdQu
                 t.Description,
                 t.Sport,
                 t.Format,
+                t.Type,
+                t.LogoUrl,
                 t.StartDate,
                 t.EndDate,
                 t.Status,

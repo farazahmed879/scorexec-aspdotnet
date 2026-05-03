@@ -10,6 +10,8 @@ public class Tournament : BaseEntity
     public string? Description { get; private set; }
     public Sport Sport { get; private set; }
     public TournamentFormat Format { get; private set; }
+    public TournamentType Type { get; private set; }
+    public string? LogoUrl { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public TournamentStatus Status { get; private set; } = TournamentStatus.Upcoming;
@@ -29,6 +31,8 @@ public class Tournament : BaseEntity
         string? description,
         Sport sport,
         TournamentFormat format,
+        TournamentType type,
+        string? logoUrl,
         DateTime startDate,
         DateTime endDate,
         int maxTeams)
@@ -40,6 +44,8 @@ public class Tournament : BaseEntity
             Description = description,
             Sport = sport,
             Format = format,
+            Type = type,
+            LogoUrl = logoUrl,
             StartDate = startDate,
             EndDate = endDate,
             MaxTeams = maxTeams,
@@ -52,6 +58,8 @@ public class Tournament : BaseEntity
         string? description,
         Sport sport,
         TournamentFormat format,
+        TournamentType type,
+        string? logoUrl,
         DateTime startDate,
         DateTime endDate,
         int maxTeams)
@@ -60,6 +68,8 @@ public class Tournament : BaseEntity
         Description = description;
         Sport = sport;
         Format = format;
+        Type = type;
+        LogoUrl = logoUrl;
         StartDate = startDate;
         EndDate = endDate;
         MaxTeams = maxTeams;
