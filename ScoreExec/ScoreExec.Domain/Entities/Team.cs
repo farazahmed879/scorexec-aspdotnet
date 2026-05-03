@@ -5,13 +5,13 @@ namespace ScoreExec.Domain.Entities;
 public class Team : BaseEntity
 {
     public Guid TenantId { get; private set; }
-    public Guid TournamentId { get; private set; }
+    public Guid? TournamentId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string? LogoUrl { get; private set; }
     public string? HomeColor { get; private set; }
     public string? AwayColor { get; private set; }
 
-    public Tournament Tournament { get; private set; } = null!;
+    public Tournament? Tournament { get; private set; }
     public ICollection<Player> Players { get; private set; } = new List<Player>();
 
     private Team()
@@ -20,7 +20,7 @@ public class Team : BaseEntity
 
     public static Team Create(
         Guid tenantId,
-        Guid tournamentId,
+        Guid? tournamentId,
         string name,
         string? logoUrl = null,
         string? homeColor = null,

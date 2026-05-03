@@ -6,7 +6,6 @@ namespace ScoreExec.Domain.Entities;
 public class Player : BaseEntity
 {
     public Guid TenantId { get; private set; }
-    public Guid TeamId { get; private set; }
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public int? JerseyNumber { get; private set; }
@@ -16,7 +15,7 @@ public class Player : BaseEntity
 
     public string FullName => $"{FirstName} {LastName}";
 
-    public Team Team { get; private set; } = null!;
+    public ICollection<Team> Teams { get; private set; } = new List<Team>();
 
     private Player()
     {
@@ -24,7 +23,6 @@ public class Player : BaseEntity
 
     public static Player Create(
         Guid tenantId,
-        Guid teamId,
         string firstName,
         string lastName,
         BattingStyle battingStyle,
@@ -34,7 +32,6 @@ public class Player : BaseEntity
         return new Player
         {
             TenantId = tenantId,
-            TeamId = teamId,
             FirstName = firstName,
             LastName = lastName,
             BattingStyle = battingStyle,

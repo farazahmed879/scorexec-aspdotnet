@@ -14,13 +14,11 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(p => p.LastName).IsRequired().HasMaxLength(50);
         builder.Property(p => p.BattingStyle).HasConversion<string>();
         builder.Property(p => p.BowlingStyle).HasConversion<string>();
-        builder.HasIndex(p => p.TeamId);
         builder.HasQueryFilter(p => !p.IsDeleted);
 
-        builder.HasOne(p => p.Team)
+        builder.HasMany(p => p.Teams)
             .WithMany(t => t.Players)
-            .HasForeignKey(p => p.TeamId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .UsingEntity(j => j.ToTable("player_teams"));
 
         builder.Ignore(p => p.FullName);
     }

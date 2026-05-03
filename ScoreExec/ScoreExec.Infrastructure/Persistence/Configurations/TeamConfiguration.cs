@@ -18,8 +18,8 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.HasQueryFilter(t => !t.IsDeleted);
 
         builder.HasOne(t => t.Tournament)
-            .WithMany(t => t.Teams)
+            .WithMany(tr => tr.Teams)
             .HasForeignKey(t => t.TournamentId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

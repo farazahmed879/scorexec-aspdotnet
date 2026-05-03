@@ -47,6 +47,25 @@ public class Tournament : BaseEntity
         };
     }
 
+    public void Update(
+        string name,
+        string? description,
+        Sport sport,
+        TournamentFormat format,
+        DateTime startDate,
+        DateTime endDate,
+        int maxTeams)
+    {
+        Name = name;
+        Description = description;
+        Sport = sport;
+        Format = format;
+        StartDate = startDate;
+        EndDate = endDate;
+        MaxTeams = maxTeams;
+        MarkAsUpdated();
+    }
+
     public void UpdateStatus(TournamentStatus status)
     {
         Status = status;

@@ -5,7 +5,7 @@ namespace ScoreExec.Domain.Entities;
 
 public class Match : BaseEntity
 {
-    public Guid TournamentId { get; private set; }
+    public Guid? TournamentId { get; private set; }
     public Guid HomeTeamId { get; private set; }
     public Guid AwayTeamId { get; private set; }
     public DateTime ScheduledAt { get; private set; }
@@ -16,7 +16,7 @@ public class Match : BaseEntity
     public TossDecision? TossDecision { get; private set; }
     public int TotalOvers { get; private set; }
 
-    public Tournament Tournament { get; private set; } = null!;
+    public Tournament? Tournament { get; private set; }
     public Team HomeTeam { get; private set; } = null!;
     public Team AwayTeam { get; private set; } = null!;
     public ICollection<Innings> Innings { get; private set; } = new List<Innings>();
@@ -26,7 +26,7 @@ public class Match : BaseEntity
     }
 
     public static Match Create(
-        Guid tournamentId,
+        Guid? tournamentId,
         Guid homeTeamId,
         Guid awayTeamId,
         DateTime scheduledAt,

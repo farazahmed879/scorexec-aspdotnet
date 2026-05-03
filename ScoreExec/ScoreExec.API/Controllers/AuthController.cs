@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScoreExec.API.Models.Auth;
 using ScoreExec.Application.Common.Interfaces;
 using ScoreExec.Domain.Entities;
@@ -70,7 +71,21 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        AppUser? user = null;
+
+        if (request.Email.Contains("@"))
+        {
+            user = await _userManager.FindByEmailAsync(request.Email);
+        }
+        else
+        {
+            user = await _userManager.FindByNameAsync(request.Email);
+            if (user == null)
+            {
+                // Try phone number
+                user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.Email);
+            }
+        }
 
         if (user is null || user.IsDeleted)
         {

@@ -2,6 +2,8 @@ using Microsoft.OpenApi.Models;
 using ScoreExec.API.Middleware;
 using ScoreExec.Application;
 using ScoreExec.Infrastructure;
+using ScoreExec.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +73,23 @@ if (string.IsNullOrWhiteSpace(configuredUrls))
 }
 
 var app = builder.Build();
+
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var context = services.GetRequiredService<AppDbContext>();
+        await DbInitializer.SeedAsync(context, userManager, roleManager);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "An error occurred while seeding the database.");
+    }
+}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
